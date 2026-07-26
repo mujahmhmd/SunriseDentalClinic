@@ -1,10 +1,23 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+  // Already logged in and landed on the login page anyway (e.g. typed the URL
+  // by hand)? Send them back to whatever page they were just on, instead of
+  // showing the form again. If there's no previous page (e.g. this is a fresh
+  // tab), fall back to the dashboard.
+  if (session.getAttribute("username") != null) {
+    String previousPage = request.getHeader("Referer");
+    response.sendRedirect(previousPage != null ? previousPage : "dashboard.jsp");
+    return;
+  }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Sunrise Dental</title>
+  <!-- Browser tab icon, stored under assets/images so all pages can share it -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 
   <!-- Distinctive font pairing: Fraunces (warm display serif) + Outfit (clean geometric sans) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,6 +75,12 @@
     <div class="rise-2 bg-white/90 backdrop-blur rounded-[1.75rem] shadow-xl shadow-clinic-900/10 border border-clinic-100 p-7">
       <form action="login" method="post">
 
+        <% if (request.getAttribute("error") != null) { %>
+        <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-3.5 py-2.5">
+          <%= request.getAttribute("error") %>
+        </div>
+        <% } %>
+
         <!-- Username -->
         <div class="mb-4">
           <label for="username" class="block text-sm font-medium text-clinic-900 mb-1.5">Username</label>
@@ -69,7 +88,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-clinic-700/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a8.25 8.25 0 0 1 15 0" />
             </svg>
-            <input type="text" id="username" name="username" placeholder="e.g. dr.smith" required
+            <input type="text" id="username" name="username" placeholder="e.g. admin/staff" required
                    class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl pl-10 pr-3 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
           </div>
         </div>
