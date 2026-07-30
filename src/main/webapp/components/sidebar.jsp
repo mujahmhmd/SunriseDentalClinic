@@ -9,6 +9,7 @@
   patients, appointments, reports, billing) so the matching nav item gets
   highlighted.
 --%>
+<%@ page buffer="64kb" %>
 <%
   String activePage = request.getParameter("active");
   if (activePage == null) activePage = "";
@@ -126,7 +127,8 @@
 
   <!-- Logout, pinned to the bottom and visually separated -->
   <div class="px-3.5 py-4 border-t border-white/10">
-    <a href="logout" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-clinic-50/65 hover:bg-coral-500/15 hover:text-coral-300 transition-colors">
+    <a href="logout" onclick="openConfirmModal('logoutModal'); return false;"
+       class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-clinic-50/65 hover:bg-coral-500/15 hover:text-coral-300 transition-colors">
       <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3H21" />
       </svg>
@@ -134,6 +136,14 @@
     </a>
   </div>
 </aside>
+
+<jsp:include page="confirm-modal.jsp">
+  <jsp:param name="id" value="logoutModal" />
+  <jsp:param name="title" value="Log out?" />
+  <jsp:param name="message" value="You'll need to sign in again to access the dashboard." />
+  <jsp:param name="confirmText" value="Logout" />
+  <jsp:param name="confirmHref" value="logout" />
+</jsp:include>
 
 <script>
   // Sidebar collapse state is remembered across visits via localStorage,
