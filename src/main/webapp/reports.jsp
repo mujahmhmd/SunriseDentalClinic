@@ -10,7 +10,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Sunrise Dental</title>
+  <title>Reports - Sunrise Dental</title>
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,23 +28,20 @@
 <body class="min-h-screen flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
-    <jsp:param name="active" value="dashboard" />
+    <jsp:param name="active" value="reports" />
   </jsp:include>
 
-  <!-- Main content -->
   <div class="flex-1 flex flex-col min-w-0">
 
     <jsp:include page="components/header.jsp">
-      <jsp:param name="title" value="Dashboard" />
+      <jsp:param name="title" value="Reports" />
     </jsp:include>
 
-    <!-- Page content -->
+    <!-- Placeholder for now; the reporting/analytics UI will be built later. -->
     <main class="flex-1 p-8">
       <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-8">
-        <h1 class="font-display text-2xl text-clinic-900 mb-1">
-          Welcome, <%= session.getAttribute("name") %>
-        </h1>
-        <p class="text-clinic-700/70">You're signed in as a <%= session.getAttribute("role") %>.</p>
+        <h1 class="font-display text-2xl text-clinic-900 mb-1">Reports</h1>
+        <p class="text-clinic-700/70">This page is coming soon.</p>
       </div>
     </main>
   </div>
