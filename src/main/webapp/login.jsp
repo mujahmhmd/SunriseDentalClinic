@@ -97,7 +97,7 @@
         <div class="mb-6">
           <div class="flex items-center justify-between mb-1.5">
             <label for="password" class="text-sm font-medium text-clinic-900">Password</label>
-            <a href="#" class="text-xs text-coral-500 hover:text-coral-400 font-medium">Forgot?</a>
+            <a href="forgot-password.jsp" class="text-xs text-coral-500 hover:text-coral-400 font-medium">Forgot?</a>
           </div>
           <div class="relative">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-clinic-700/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -127,7 +127,7 @@
 
     <!-- Help link -->
     <div class="rise-3 flex justify-center mt-5">
-      <a href="#" class="flex items-center gap-1.5 text-xs text-clinic-800 bg-white/80 border border-clinic-100 rounded-full px-3.5 py-1.5 shadow-sm hover:bg-white transition">
+      <a href="help.jsp" class="flex items-center gap-1.5 text-xs text-clinic-800 bg-white/80 border border-clinic-100 rounded-full px-3.5 py-1.5 shadow-sm hover:bg-white transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M12 17.25h.007v.008H12v-.008Z" />
         </svg>
@@ -135,7 +135,7 @@
       </a>
     </div>
 
-    <p class="rise-3 text-center text-xs text-clinic-700/50 mt-4">&copy; 2024 Sunrise Dental Clinic. All rights reserved.</p>
+    <p class="rise-3 text-center text-xs text-clinic-700/50 mt-4">&copy; 2026 Sunrise Dental Clinic. All rights reserved.</p>
   </div>
 
   <script>
