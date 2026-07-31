@@ -73,13 +73,7 @@
 
     <!-- Login card -->
     <div class="rise-2 bg-white/90 backdrop-blur rounded-[1.75rem] shadow-xl shadow-clinic-900/10 border border-clinic-100 p-7">
-      <form action="login" method="post">
-
-        <% if (request.getAttribute("error") != null) { %>
-        <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-3.5 py-2.5">
-          <%= request.getAttribute("error") %>
-        </div>
-        <% } %>
+      <form id="loginForm" action="login" method="post" novalidate>
 
         <!-- Username -->
         <div class="mb-4">
@@ -91,6 +85,7 @@
             <input type="text" id="username" name="username" placeholder="e.g. admin/staff" required
                    class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl pl-10 pr-3 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
           </div>
+          <p id="usernameError" class="hidden text-xs text-red-600 mt-1.5"></p>
         </div>
 
         <!-- Password -->
@@ -112,6 +107,7 @@
               </svg>
             </button>
           </div>
+          <p id="passwordError" class="hidden text-xs text-red-600 mt-1.5"></p>
         </div>
 
         <!-- Submit -->
@@ -146,6 +142,45 @@
       const field = document.getElementById('password');
       field.type = field.type === 'password' ? 'text' : 'password';
     }
+
+    function showFieldError(id, message) {
+      const errorEl = document.getElementById(id + 'Error');
+      const inputEl = document.getElementById(id);
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+      inputEl.classList.add('border-red-400');
+      inputEl.classList.remove('border-clinic-100');
+    }
+
+    function clearFieldError(id) {
+      const errorEl = document.getElementById(id + 'Error');
+      const inputEl = document.getElementById(id);
+      errorEl.classList.add('hidden');
+      inputEl.classList.remove('border-red-400');
+      inputEl.classList.add('border-clinic-100');
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      let valid = true;
+
+      const username = document.getElementById('username').value.trim();
+      if (username === '') {
+        showFieldError('username', 'Username is required.');
+        valid = false;
+      } else {
+        clearFieldError('username');
+      }
+
+      const password = document.getElementById('password').value;
+      if (password === '') {
+        showFieldError('password', 'Password is required.');
+        valid = false;
+      } else {
+        clearFieldError('password');
+      }
+
+      if (!valid) e.preventDefault();
+    });
 
     <% if (request.getAttribute("error") != null) { %>
     showToast('<%= request.getAttribute("error") %>', 'error');
