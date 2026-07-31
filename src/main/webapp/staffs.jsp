@@ -4,6 +4,9 @@
     response.sendRedirect("login.jsp");
     return;
   }
+  String searchQuery = request.getAttribute("searchQuery") != null ? (String) request.getAttribute("searchQuery") : "";
+  int initialPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
+  String successMessage = request.getParameter("success");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,26 +28,133 @@
     .font-display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="min-h-screen flex bg-clinic-50 text-clinic-900">
+<body class="h-screen overflow-hidden flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
     <jsp:param name="active" value="staffs" />
   </jsp:include>
 
-  <div class="flex-1 flex flex-col min-w-0">
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
 
     <jsp:include page="components/header.jsp">
       <jsp:param name="title" value="Staffs" />
     </jsp:include>
 
-    <!-- Placeholder for now; the staff list/management UI will be built later. -->
     <main class="flex-1 p-8">
-      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-8">
-        <h1 class="font-display text-2xl text-clinic-900 mb-1">Staffs</h1>
-        <p class="text-clinic-700/70">This page is coming soon.</p>
+      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm overflow-hidden">
+
+        <!-- Toolbar: search + create -->
+        <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-clinic-100">
+          <div class="relative w-full sm:max-w-xs">
+            <svg class="w-4 h-4 text-clinic-700/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input type="text" id="staffSearch" value="<%= searchQuery %>" placeholder="Search by name or username"
+                   class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl pl-10 pr-3 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+          </div>
+
+          <a href="create-staff.jsp"
+             class="inline-flex items-center justify-center gap-2 bg-clinic-800 hover:bg-clinic-900 text-clinic-50 text-sm font-medium rounded-xl px-4 py-2.5 transition shadow-sm shrink-0">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Create Staff
+          </a>
+        </div>
+
+        <!-- Replaced in place on search/pagination, no full page reload -->
+        <div id="staffTableContainer">
+          <jsp:include page="components/staff-table.jsp" />
+        </div>
       </div>
     </main>
   </div>
+
+  <jsp:include page="components/confirm-modal.jsp">
+    <jsp:param name="id" value="deleteStaffModal" />
+    <jsp:param name="title" value="Remove this staff member?" />
+    <jsp:param name="message" value="This will permanently remove their account. This can't be undone." />
+    <jsp:param name="confirmText" value="Delete" />
+    <jsp:param name="confirmHref" value="#" />
+  </jsp:include>
+
+  <jsp:include page="components/toast.jsp" />
+
+  <script>
+    (function () {
+      var searchInput = document.getElementById('staffSearch');
+      var container = document.getElementById('staffTableContainer');
+      var debounceTimer = null;
+      var currentPage = <%= initialPage %>;
+
+      function loadStaff(query, page, pushState) {
+        var url = 'staffs?q=' + encodeURIComponent(query) + '&page=' + page;
+        fetch(url + '&ajax=1')
+          .then(function (res) { return res.text(); })
+          .then(function (html) {
+            currentPage = page;
+            container.innerHTML = html;
+            if (pushState) {
+              history.pushState({ q: query, page: page }, '', url);
+            }
+          });
+      }
+
+      // Filters as you type, debounced so it doesn't fire a request per keystroke.
+      searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var query = searchInput.value;
+        debounceTimer = setTimeout(function () {
+          loadStaff(query, 1, true);
+        }, 300);
+      });
+
+      // Pagination links and status toggles inside the fragment are
+      // re-rendered on every load, so we delegate from the container
+      // instead of binding to each one individually.
+      container.addEventListener('click', function (e) {
+        var link = e.target.closest('.page-link');
+        if (link) {
+          if (link.classList.contains('pointer-events-none')) return;
+          e.preventDefault();
+          loadStaff(searchInput.value, link.dataset.page, true);
+          return;
+        }
+
+        var toggle = e.target.closest('.status-toggle');
+        if (toggle) {
+          fetch('toggleStaffStatus?id=' + toggle.dataset.id, { method: 'POST' })
+            .then(function () {
+              loadStaff(searchInput.value, currentPage, false);
+              showToast('Status updated', 'success');
+            });
+        }
+      });
+
+      // Supports the browser back/forward buttons since we're pushing state above.
+      window.addEventListener('popstate', function (e) {
+        var state = e.state || { q: '', page: 1 };
+        searchInput.value = state.q;
+        loadStaff(state.q, state.page, false);
+      });
+
+      <% if (successMessage != null) { %>
+      showToast('<%= successMessage %>', 'success');
+      // Drops ?success=... from the address bar so refreshing doesn't replay the toast.
+      history.replaceState({ q: '<%= searchQuery %>', page: <%= initialPage %> }, '', 'staffs?q=<%= java.net.URLEncoder.encode(searchQuery, "UTF-8") %>&page=<%= initialPage %>');
+      <% } %>
+    })();
+
+    // Called from the Delete button rendered inside the staff table fragment.
+    function confirmDeleteStaff(id, name) {
+      document.querySelector('#deleteStaffModal p').textContent =
+        'This will permanently remove ' + name + '’s account. This can’t be undone.';
+      document.querySelector('#deleteStaffModal button.bg-coral-500').onclick = function () {
+        window.location.href = 'deleteStaff?id=' + id;
+      };
+      openConfirmModal('deleteStaffModal');
+    }
+  </script>
 
 </body>
 </html>
