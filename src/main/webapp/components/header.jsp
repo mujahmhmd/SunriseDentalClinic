@@ -12,7 +12,7 @@
 <%
   String pageTitle = request.getParameter("title");
 %>
-<header class="h-20 px-8 flex items-center justify-between border-b border-clinic-100 bg-white/60 backdrop-blur">
+<header class="sticky top-0 z-10 shrink-0 h-20 px-8 flex items-center justify-between border-b border-clinic-100 bg-white/60 backdrop-blur">
   <h2 class="font-display text-xl text-clinic-900"><%= pageTitle %></h2>
   <div class="flex items-center gap-3">
     <div class="text-right">
