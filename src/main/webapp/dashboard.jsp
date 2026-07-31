@@ -25,14 +25,14 @@
     .font-display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="min-h-screen flex bg-clinic-50 text-clinic-900">
+<body class="h-screen overflow-hidden flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
     <jsp:param name="active" value="dashboard" />
   </jsp:include>
 
   <!-- Main content -->
-  <div class="flex-1 flex flex-col min-w-0">
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
 
     <jsp:include page="components/header.jsp">
       <jsp:param name="title" value="Dashboard" />
