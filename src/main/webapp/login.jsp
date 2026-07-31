@@ -138,12 +138,18 @@
     <p class="rise-3 text-center text-xs text-clinic-700/50 mt-4">&copy; 2026 Sunrise Dental Clinic. All rights reserved.</p>
   </div>
 
+  <jsp:include page="components/toast.jsp" />
+
   <script>
     // Shows/hides the password text
     function togglePassword() {
       const field = document.getElementById('password');
       field.type = field.type === 'password' ? 'text' : 'password';
     }
+
+    <% if (request.getAttribute("error") != null) { %>
+    showToast('<%= request.getAttribute("error") %>', 'error');
+    <% } %>
   </script>
 
 </body>
