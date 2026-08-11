@@ -181,7 +181,7 @@
                 <% } %>
               </div>
 
-              <div id="dayTimeRows" class="space-y-2">
+              <div id="dayTimeRows" class="space-y-4">
                 <% for (String day : DoctorValidator.DAYS) {
                      boolean dayChecked = selectedDays.contains(day);
                      Object startAttr = request.getAttribute("start_" + day);
@@ -189,13 +189,31 @@
                      String startVal = startAttr != null ? (String) startAttr : "";
                      String endVal = endAttr != null ? (String) endAttr : "";
                 %>
-                <div class="day-time-row <%= dayChecked ? "" : "hidden" %> flex items-center gap-3" data-day-row="<%= day %>">
-                  <span class="w-24 text-sm text-clinic-700 shrink-0"><%= day %></span>
-                  <input type="time" name="start_<%= day %>" value="<%= startVal %>"
-                         class="border border-clinic-100 bg-clinic-50/50 rounded-lg px-2.5 py-1.5 text-sm text-clinic-900 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
-                  <span class="text-clinic-700/40 text-sm">to</span>
-                  <input type="time" name="end_<%= day %>" value="<%= endVal %>"
-                         class="border border-clinic-100 bg-clinic-50/50 rounded-lg px-2.5 py-1.5 text-sm text-clinic-900 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+                <div class="day-time-row <%= dayChecked ? "" : "hidden" %> bg-clinic-50/50 border border-clinic-100 rounded-xl p-3" data-day-row="<%= day %>">
+                  <p class="text-sm font-medium text-clinic-900 mb-2"><%= day %></p>
+
+                  <p class="text-xs text-clinic-700/50 mb-1.5">From</p>
+                  <div class="flex flex-wrap gap-1.5 mb-3">
+                    <% for (String[] hour : DoctorValidator.HOURS) { boolean hourChecked = hour[0].equals(startVal); %>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="start_<%= day %>" value="<%= hour[0] %>" class="start-radio peer sr-only" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %>>
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors"><%= hour[1] %></span>
+                    </label>
+                    <% } %>
+                  </div>
+
+                  <p class="text-xs text-clinic-700/50 mb-1.5">To</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <% for (String[] hour : DoctorValidator.HOURS) {
+                         boolean hourChecked = hour[0].equals(endVal);
+                         boolean hourEnabled = !startVal.isEmpty() && hour[0].compareTo(startVal) > 0;
+                    %>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="end_<%= day %>" value="<%= hour[0] %>" class="end-radio peer sr-only" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %> <%= hourEnabled ? "" : "disabled" %>>
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 peer-disabled:opacity-30 peer-disabled:cursor-not-allowed transition-colors"><%= hour[1] %></span>
+                    </label>
+                    <% } %>
+                  </div>
                 </div>
                 <% } %>
               </div>
