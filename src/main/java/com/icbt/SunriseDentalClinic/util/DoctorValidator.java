@@ -10,6 +10,11 @@ import java.util.regex.Pattern;
  */
 public final class DoctorValidator {
 
+    /** Shared with the servlets and JSPs so the day list only lives in one place. */
+    public static final String[] DAYS = {
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
+
     // Sri Lankan NIC: old format is 9 digits + V/X (e.g. 912345678V),
     // new format is 12 digits with no letter (e.g. 200012345678).
     private static final Pattern NIC_PATTERN = Pattern.compile("^(\\d{9}[VXvx]|\\d{12})$");

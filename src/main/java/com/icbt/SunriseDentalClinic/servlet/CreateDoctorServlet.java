@@ -16,7 +16,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +46,19 @@ public class CreateDoctorServlet extends HttpServlet {
         String experienceYears = request.getParameter("experienceYears");
         String consultationFee = request.getParameter("consultationFee");
         String[] specializationIds = request.getParameterValues("specializations");
+        String[] days = request.getParameterValues("days");
+        Map<String, String> startTimes = new HashMap<>();
+        Map<String, String> endTimes = new HashMap<>();
+        for (String day : DoctorValidator.DAYS) {
+            startTimes.put(day, request.getParameter("start_" + day));
+            endTimes.put(day, request.getParameter("end_" + day));
+        }
 
         String validationError = DoctorValidator.validate(name, nic, phone, slmcRegNo,
                 qualifications, experienceYears, consultationFee, specializationIds);
+        if (validationError == null) {
+            validationError = DoctorValidator.validateSchedule(days, startTimes, endTimes);
+        }
         if (validationError != null) {
             forwardWithError(request, response, validationError);
             return;
@@ -98,6 +110,20 @@ public class CreateDoctorServlet extends HttpServlet {
                 ps.executeBatch();
             }
 
+            if (days != null && days.length > 0) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "INSERT INTO doctor_schedules (doctor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)")) {
+                    for (String day : days) {
+                        ps.setInt(1, doctorId);
+                        ps.setString(2, day);
+                        ps.setTime(3, Time.valueOf(startTimes.get(day) + ":00"));
+                        ps.setTime(4, Time.valueOf(endTimes.get(day) + ":00"));
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            }
+
         } catch (SQLException e) {
             throw new ServletException("Database error while creating doctor", e);
         }
@@ -135,6 +161,12 @@ public class CreateDoctorServlet extends HttpServlet {
         request.setAttribute("consultationFee", request.getParameter("consultationFee"));
         String[] selected = request.getParameterValues("specializations");
         request.setAttribute("selectedSpecializations", selected == null ? new String[0] : selected);
+        String[] days = request.getParameterValues("days");
+        request.setAttribute("selectedDays", days == null ? new String[0] : days);
+        for (String day : DoctorValidator.DAYS) {
+            request.setAttribute("start_" + day, request.getParameter("start_" + day));
+            request.setAttribute("end_" + day, request.getParameter("end_" + day));
+        }
         loadSpecializations(request);
         request.getRequestDispatcher("create-doctor.jsp").forward(request, response);
     }
