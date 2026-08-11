@@ -196,10 +196,15 @@
 
                   <p class="text-xs text-clinic-700/50 mb-1.5">From</p>
                   <div class="flex flex-wrap gap-1.5 mb-3">
-                    <% for (String[] hour : DoctorValidator.HOURS) { boolean hourChecked = hour[0].equals(startVal); %>
+                    <% for (int h = 0; h < DoctorValidator.HOURS.length; h++) {
+                         String[] hour = DoctorValidator.HOURS[h];
+                         boolean hourChecked = hour[0].equals(startVal);
+                         // The last hour can never be a start — there'd be no later hour to end at.
+                         boolean startEnabled = h < DoctorValidator.HOURS.length - 1;
+                    %>
                     <label class="relative inline-flex cursor-pointer">
-                      <input type="radio" name="start_<%= day %>" value="<%= hour[0] %>" class="start-radio peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %>>
-                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors"><%= hour[1] %></span>
+                      <input type="radio" name="start_<%= day %>" value="<%= hour[0] %>" class="start-radio peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %> <%= startEnabled ? "" : "disabled" %>>
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 peer-disabled:opacity-30 peer-disabled:cursor-not-allowed transition-colors"><%= hour[1] %></span>
                     </label>
                     <% } %>
                   </div>
