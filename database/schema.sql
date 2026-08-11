@@ -23,6 +23,19 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS nic VARCHAR(20) NULL AFTER name;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address VARCHAR(255) NULL AFTER nic;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20) NULL AFTER address;
 
+-- "Remember me" persistent login tokens. A row here lets a browser skip
+-- re-entering credentials (and survive a server redeploy, unlike the plain
+-- HttpSession) until expires_at. Only the SHA-256 hash of the token is
+-- stored, never the raw value the browser's cookie holds.
+CREATE TABLE IF NOT EXISTS remember_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Seed accounts (passwords are bcrypt-hashed, never stored in plain text).
 -- IGNORE makes this safe to re-run: rows are skipped (not duplicated or
 -- errored on) if a username already exists from a previous run.
