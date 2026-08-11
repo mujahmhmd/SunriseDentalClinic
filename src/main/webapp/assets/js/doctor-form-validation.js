@@ -127,6 +127,47 @@ function initDoctorFormValidation(formId) {
     return true;
   }
 
+  // A day's time-range row only shows once that day is toggled on — no point
+  // asking for hours on a day the doctor doesn't visit.
+  document.querySelectorAll('.day-checkbox').forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
+      var row = document.querySelector('[data-day-row="' + checkbox.dataset.day + '"]');
+      if (!row) return;
+      row.classList.toggle('hidden', !checkbox.checked);
+      validateSchedule();
+    });
+  });
+
+  function validateSchedule() {
+    var scheduleError = document.getElementById('scheduleError');
+    if (!scheduleError) return true;
+
+    var checkedDays = document.querySelectorAll('.day-checkbox:checked');
+    for (var i = 0; i < checkedDays.length; i++) {
+      var day = checkedDays[i].dataset.day;
+      var start = document.querySelector('input[name="start_' + day + '"]').value;
+      var end = document.querySelector('input[name="end_' + day + '"]').value;
+
+      if (!start || !end) {
+        scheduleError.textContent = 'Set a visiting time range for ' + day + '.';
+        scheduleError.classList.remove('hidden');
+        return false;
+      }
+      if (start >= end) {
+        scheduleError.textContent = 'For ' + day + ', the end time must be after the start time.';
+        scheduleError.classList.remove('hidden');
+        return false;
+      }
+    }
+
+    scheduleError.classList.add('hidden');
+    return true;
+  }
+
+  document.querySelectorAll('#dayTimeRows input[type="time"]').forEach(function (input) {
+    input.addEventListener('blur', validateSchedule);
+  });
+
   var fieldValidators = {
     name: validateName,
     nic: validateNic,
@@ -153,7 +194,7 @@ function initDoctorFormValidation(formId) {
     var valid = [
       validateName(), validateNic(), validatePhone(), validateSlmc(),
       validateQualifications(), validateSpecializations(),
-      validateExperienceYears(), validateConsultationFee()
+      validateExperienceYears(), validateConsultationFee(), validateSchedule()
     ].every(function (result) { return result; });
 
     if (!valid) e.preventDefault();
