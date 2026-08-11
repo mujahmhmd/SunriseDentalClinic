@@ -15,8 +15,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/editDoctor")
 public class EditDoctorServlet extends HttpServlet {
@@ -64,6 +67,21 @@ public class EditDoctorServlet extends HttpServlet {
             }
             request.setAttribute("selectedSpecializations", selected.toArray(new String[0]));
 
+            List<String> selectedDays = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT day_of_week, start_time, end_time FROM doctor_schedules WHERE doctor_id = ?")) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String day = rs.getString("day_of_week");
+                        selectedDays.add(day);
+                        request.setAttribute("start_" + day, rs.getTime("start_time").toString().substring(0, 5));
+                        request.setAttribute("end_" + day, rs.getTime("end_time").toString().substring(0, 5));
+                    }
+                }
+            }
+            request.setAttribute("selectedDays", selectedDays.toArray(new String[0]));
+
         } catch (SQLException e) {
             throw new ServletException("Database error while loading doctor", e);
         }
@@ -86,9 +104,19 @@ public class EditDoctorServlet extends HttpServlet {
         String experienceYears = request.getParameter("experienceYears");
         String consultationFee = request.getParameter("consultationFee");
         String[] specializationIds = request.getParameterValues("specializations");
+        String[] days = request.getParameterValues("days");
+        Map<String, String> startTimes = new HashMap<>();
+        Map<String, String> endTimes = new HashMap<>();
+        for (String day : DoctorValidator.DAYS) {
+            startTimes.put(day, request.getParameter("start_" + day));
+            endTimes.put(day, request.getParameter("end_" + day));
+        }
 
         String validationError = DoctorValidator.validate(name, nic, phone, slmcRegNo,
                 qualifications, experienceYears, consultationFee, specializationIds);
+        if (validationError == null) {
+            validationError = DoctorValidator.validateSchedule(days, startTimes, endTimes);
+        }
         if (validationError != null) {
             forwardWithError(request, response, validationError, id);
             return;
@@ -141,6 +169,25 @@ public class EditDoctorServlet extends HttpServlet {
                 ps.executeBatch();
             }
 
+            // Same clear-and-re-insert approach for the visiting-hours schedule.
+            try (PreparedStatement ps = conn.prepareStatement("DELETE FROM doctor_schedules WHERE doctor_id = ?")) {
+                ps.setString(1, id);
+                ps.executeUpdate();
+            }
+            if (days != null && days.length > 0) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "INSERT INTO doctor_schedules (doctor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)")) {
+                    for (String day : days) {
+                        ps.setString(1, id);
+                        ps.setString(2, day);
+                        ps.setTime(3, Time.valueOf(startTimes.get(day) + ":00"));
+                        ps.setTime(4, Time.valueOf(endTimes.get(day) + ":00"));
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            }
+
         } catch (SQLException e) {
             throw new ServletException("Database error while updating doctor", e);
         }
@@ -162,6 +209,12 @@ public class EditDoctorServlet extends HttpServlet {
         request.setAttribute("consultationFee", request.getParameter("consultationFee"));
         String[] selected = request.getParameterValues("specializations");
         request.setAttribute("selectedSpecializations", selected == null ? new String[0] : selected);
+        String[] days = request.getParameterValues("days");
+        request.setAttribute("selectedDays", days == null ? new String[0] : days);
+        for (String day : DoctorValidator.DAYS) {
+            request.setAttribute("start_" + day, request.getParameter("start_" + day));
+            request.setAttribute("end_" + day, request.getParameter("end_" + day));
+        }
         CreateDoctorServlet.loadSpecializations(request);
         request.getRequestDispatcher("edit-doctor.jsp").forward(request, response);
     }
