@@ -1,5 +1,6 @@
 package com.icbt.SunriseDentalClinic.util;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -70,6 +71,33 @@ public final class DoctorValidator {
             }
         }
 
+        return null;
+    }
+
+    /**
+     * @param days       the visiting days that were toggled on (e.g. from
+     *                   request.getParameterValues("days")); no days selected
+     *                   is fine — a schedule isn't mandatory
+     * @param startTimes day name -> "start_&lt;day&gt;" form value ("HH:mm")
+     * @param endTimes   day name -> "end_&lt;day&gt;" form value ("HH:mm")
+     * @return the first validation error found, or null if everything's valid
+     */
+    public static String validateSchedule(String[] days, Map<String, String> startTimes, Map<String, String> endTimes) {
+        if (days == null) {
+            return null;
+        }
+        for (String day : days) {
+            String start = startTimes.get(day);
+            String end = endTimes.get(day);
+            if (start == null || start.isEmpty() || end == null || end.isEmpty()) {
+                return "Set a visiting time range for " + day + ".";
+            }
+            // "HH:mm" strings compare correctly as plain strings since they're
+            // fixed-width and zero-padded.
+            if (start.compareTo(end) >= 0) {
+                return "For " + day + ", the end time must be after the start time.";
+            }
+        }
         return null;
     }
 }
