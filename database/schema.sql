@@ -68,6 +68,19 @@ CREATE TABLE IF NOT EXISTS doctor_specializations (
     FOREIGN KEY (specialization_id) REFERENCES specializations(id) ON DELETE CASCADE
 );
 
+-- One visiting-hours row per day a doctor is available. A doctor can have
+-- 0-7 rows (0 = no schedule set yet); one time range per day is enough for
+-- a single-shift clinic, which covers the "10 AM to 1 PM"-style case asked for.
+CREATE TABLE IF NOT EXISTS doctor_schedules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_id INT NOT NULL,
+    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    UNIQUE KEY doctor_day (doctor_id, day_of_week),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+);
+
 INSERT IGNORE INTO specializations (name) VALUES
     ('General Dentistry'),
     ('Orthodontics'),
