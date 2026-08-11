@@ -15,6 +15,16 @@ public final class DoctorValidator {
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
 
+    /**
+     * Whole-hour visiting-time options, clinic hours only (9 AM-5 PM).
+     * {form value "HH:mm", display label}. Kept in this one place since both
+     * create-doctor.jsp and edit-doctor.jsp render the same tag options.
+     */
+    public static final String[][] HOURS = {
+            {"09:00", "9 AM"}, {"10:00", "10 AM"}, {"11:00", "11 AM"}, {"12:00", "12 PM"},
+            {"13:00", "1 PM"}, {"14:00", "2 PM"}, {"15:00", "3 PM"}, {"16:00", "4 PM"}, {"17:00", "5 PM"}
+    };
+
     // Sri Lankan NIC: old format is 9 digits + V/X (e.g. 912345678V),
     // new format is 12 digits with no letter (e.g. 200012345678).
     private static final Pattern NIC_PATTERN = Pattern.compile("^(\\d{9}[VXvx]|\\d{12})$");
