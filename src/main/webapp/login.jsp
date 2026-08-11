@@ -110,6 +110,13 @@
           <p id="passwordError" class="hidden text-xs text-red-600 mt-1.5"></p>
         </div>
 
+        <!-- Remember me -->
+        <label class="flex items-center gap-2 mb-6 cursor-pointer select-none">
+          <input type="checkbox" id="remember" name="remember"
+                 class="w-4 h-4 rounded border-clinic-100 text-clinic-600 focus:ring-clinic-600 focus:ring-offset-0">
+          <span class="text-sm text-clinic-700/80">Keep me logged in</span>
+        </label>
+
         <!-- Submit -->
         <button type="submit"
                 class="w-full flex items-center justify-center gap-2 bg-clinic-800 hover:bg-clinic-900 text-clinic-50 text-sm font-medium rounded-xl py-3 transition shadow-lg shadow-clinic-900/15">
