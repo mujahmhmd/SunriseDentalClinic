@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" buffer="64kb" %>
 <%@ page import="java.util.List, java.util.Map, java.util.Set, java.util.HashSet, java.util.Arrays" %>
+<%@ page import="com.icbt.SunriseDentalClinic.util.DoctorValidator" %>
 <%
   if (session.getAttribute("username") == null) {
     response.sendRedirect("login.jsp");
@@ -62,6 +63,9 @@
           List<Map<String, String>> specializations = (List<Map<String, String>>) request.getAttribute("specializations");
           String[] selectedArr = (String[]) request.getAttribute("selectedSpecializations");
           Set<String> selected = selectedArr == null ? new HashSet<String>() : new HashSet<String>(Arrays.asList(selectedArr));
+
+          String[] selectedDaysArr = (String[]) request.getAttribute("selectedDays");
+          Set<String> selectedDays = selectedDaysArr == null ? new HashSet<String>() : new HashSet<String>(Arrays.asList(selectedDaysArr));
         %>
 
         <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-7">
@@ -162,6 +166,42 @@
                        class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
                 <p id="consultationFeeError" class="hidden text-xs text-red-600 mt-1.5"></p>
               </div>
+            </div>
+
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-clinic-900 mb-1.5">Visiting Days <span class="text-clinic-700/40 font-normal">(optional)</span></label>
+              <div class="flex flex-wrap gap-2 mb-3">
+                <% for (String day : DoctorValidator.DAYS) {
+                     boolean dayChecked = selectedDays.contains(day);
+                %>
+                <label class="cursor-pointer">
+                  <input type="checkbox" name="days" value="<%= day %>" class="day-checkbox peer sr-only" data-day="<%= day %>" <%= dayChecked ? "checked" : "" %>>
+                  <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm border border-clinic-100 text-clinic-700 peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors">
+                    <%= day.substring(0, 3) %>
+                  </span>
+                </label>
+                <% } %>
+              </div>
+
+              <div id="dayTimeRows" class="space-y-2">
+                <% for (String day : DoctorValidator.DAYS) {
+                     boolean dayChecked = selectedDays.contains(day);
+                     Object startAttr = request.getAttribute("start_" + day);
+                     Object endAttr = request.getAttribute("end_" + day);
+                     String startVal = startAttr != null ? (String) startAttr : "";
+                     String endVal = endAttr != null ? (String) endAttr : "";
+                %>
+                <div class="day-time-row <%= dayChecked ? "" : "hidden" %> flex items-center gap-3" data-day-row="<%= day %>">
+                  <span class="w-24 text-sm text-clinic-700 shrink-0"><%= day %></span>
+                  <input type="time" name="start_<%= day %>" value="<%= startVal %>"
+                         class="border border-clinic-100 bg-clinic-50/50 rounded-lg px-2.5 py-1.5 text-sm text-clinic-900 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+                  <span class="text-clinic-700/40 text-sm">to</span>
+                  <input type="time" name="end_<%= day %>" value="<%= endVal %>"
+                         class="border border-clinic-100 bg-clinic-50/50 rounded-lg px-2.5 py-1.5 text-sm text-clinic-900 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+                </div>
+                <% } %>
+              </div>
+              <p id="scheduleError" class="hidden text-xs text-red-600 mt-1.5"></p>
             </div>
 
             <button type="submit"
