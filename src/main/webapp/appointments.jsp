@@ -6,7 +6,7 @@
   }
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full overflow-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,13 +25,13 @@
     .font-display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="h-screen overflow-hidden flex bg-clinic-50 text-clinic-900">
+<body class="h-full overflow-hidden flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
     <jsp:param name="active" value="appointments" />
   </jsp:include>
 
-  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+  <div class="flex-1 flex flex-col min-w-0 min-h-0 h-screen overflow-y-auto">
 
     <jsp:include page="components/header.jsp">
       <jsp:param name="title" value="Appointments" />

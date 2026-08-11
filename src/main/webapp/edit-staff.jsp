@@ -6,7 +6,7 @@
   }
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full overflow-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,19 +25,19 @@
     .font-display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="h-screen overflow-hidden flex bg-clinic-50 text-clinic-900">
+<body class="h-full overflow-hidden flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
     <jsp:param name="active" value="staffs" />
   </jsp:include>
 
-  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+  <div class="flex-1 flex flex-col min-w-0 min-h-0 h-screen overflow-y-auto">
 
     <jsp:include page="components/header.jsp">
       <jsp:param name="title" value="Edit Staff" />
     </jsp:include>
 
-    <main class="flex-1 p-8 flex justify-center">
+    <main class="flex-1 min-h-0 p-8 flex justify-center">
       <div class="w-full max-w-lg">
 
         <a href="staffs" class="inline-flex items-center gap-1.5 text-sm text-clinic-700/70 hover:text-clinic-900 mb-5 transition-colors">

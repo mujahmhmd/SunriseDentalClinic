@@ -8,7 +8,7 @@
   }
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full overflow-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,19 +27,19 @@
     .font-display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="h-screen overflow-hidden flex bg-clinic-50 text-clinic-900">
+<body class="h-full overflow-hidden flex bg-clinic-50 text-clinic-900">
 
   <jsp:include page="components/sidebar.jsp">
     <jsp:param name="active" value="doctors" />
   </jsp:include>
 
-  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+  <div class="flex-1 flex flex-col min-w-0 min-h-0 h-screen overflow-y-auto">
 
     <jsp:include page="components/header.jsp">
       <jsp:param name="title" value="Edit Doctor" />
     </jsp:include>
 
-    <main class="flex-1 p-8 flex justify-center">
+    <main class="flex-1 min-h-0 p-8 flex justify-center">
       <div class="w-full max-w-lg">
 
         <a href="doctors" class="inline-flex items-center gap-1.5 text-sm text-clinic-700/70 hover:text-clinic-900 mb-5 transition-colors">
@@ -132,8 +132,8 @@
                      String specId = spec.get("id");
                      boolean checked = selected.contains(specId);
                 %>
-                <label class="cursor-pointer">
-                  <input type="checkbox" name="specializations" value="<%= specId %>" class="peer sr-only" <%= checked ? "checked" : "" %>>
+                <label class="relative inline-flex cursor-pointer">
+                  <input type="checkbox" name="specializations" value="<%= specId %>" class="peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" <%= checked ? "checked" : "" %>>
                   <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm border border-clinic-100 text-clinic-700 peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors">
                     <%= spec.get("name") %>
                   </span>
@@ -174,8 +174,8 @@
                 <% for (String day : DoctorValidator.DAYS) {
                      boolean dayChecked = selectedDays.contains(day);
                 %>
-                <label class="cursor-pointer">
-                  <input type="checkbox" name="days" value="<%= day %>" class="day-checkbox peer sr-only" data-day="<%= day %>" <%= dayChecked ? "checked" : "" %>>
+                <label class="relative inline-flex cursor-pointer">
+                  <input type="checkbox" name="days" value="<%= day %>" class="day-checkbox peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" data-day="<%= day %>" <%= dayChecked ? "checked" : "" %>>
                   <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm border border-clinic-100 text-clinic-700 peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors">
                     <%= day.substring(0, 3) %>
                   </span>
@@ -197,8 +197,8 @@
                   <p class="text-xs text-clinic-700/50 mb-1.5">From</p>
                   <div class="flex flex-wrap gap-1.5 mb-3">
                     <% for (String[] hour : DoctorValidator.HOURS) { boolean hourChecked = hour[0].equals(startVal); %>
-                    <label class="cursor-pointer">
-                      <input type="radio" name="start_<%= day %>" value="<%= hour[0] %>" class="start-radio peer sr-only" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %>>
+                    <label class="relative inline-flex cursor-pointer">
+                      <input type="radio" name="start_<%= day %>" value="<%= hour[0] %>" class="start-radio peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %>>
                       <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 transition-colors"><%= hour[1] %></span>
                     </label>
                     <% } %>
@@ -210,8 +210,8 @@
                          boolean hourChecked = hour[0].equals(endVal);
                          boolean hourEnabled = !startVal.isEmpty() && hour[0].compareTo(startVal) > 0;
                     %>
-                    <label class="cursor-pointer">
-                      <input type="radio" name="end_<%= day %>" value="<%= hour[0] %>" class="end-radio peer sr-only" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %> <%= hourEnabled ? "" : "disabled" %>>
+                    <label class="relative inline-flex cursor-pointer">
+                      <input type="radio" name="end_<%= day %>" value="<%= hour[0] %>" class="end-radio peer absolute inset-0 w-full h-full opacity-0 m-0 cursor-pointer" data-day="<%= day %>" <%= hourChecked ? "checked" : "" %> <%= hourEnabled ? "" : "disabled" %>>
                       <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs border border-clinic-100 text-clinic-700 bg-white peer-checked:bg-clinic-800 peer-checked:text-white peer-checked:border-clinic-800 peer-disabled:opacity-30 peer-disabled:cursor-not-allowed transition-colors"><%= hour[1] %></span>
                     </label>
                     <% } %>
