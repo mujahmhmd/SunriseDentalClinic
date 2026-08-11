@@ -138,6 +138,11 @@ function initDoctorFormValidation(formId) {
     });
   });
 
+  function checkedValue(name) {
+    var checked = document.querySelector('input[name="' + name + '"]:checked');
+    return checked ? checked.value : '';
+  }
+
   function validateSchedule() {
     var scheduleError = document.getElementById('scheduleError');
     if (!scheduleError) return true;
@@ -145,14 +150,16 @@ function initDoctorFormValidation(formId) {
     var checkedDays = document.querySelectorAll('.day-checkbox:checked');
     for (var i = 0; i < checkedDays.length; i++) {
       var day = checkedDays[i].dataset.day;
-      var start = document.querySelector('input[name="start_' + day + '"]').value;
-      var end = document.querySelector('input[name="end_' + day + '"]').value;
+      var start = checkedValue('start_' + day);
+      var end = checkedValue('end_' + day);
 
       if (!start || !end) {
         scheduleError.textContent = 'Set a visiting time range for ' + day + '.';
         scheduleError.classList.remove('hidden');
         return false;
       }
+      // Redundant with the End tags already being disabled for anything
+      // <= Start, but kept as a safety net.
       if (start >= end) {
         scheduleError.textContent = 'For ' + day + ', the end time must be after the start time.';
         scheduleError.classList.remove('hidden');
@@ -164,8 +171,27 @@ function initDoctorFormValidation(formId) {
     return true;
   }
 
-  document.querySelectorAll('#dayTimeRows input[type="time"]').forEach(function (input) {
-    input.addEventListener('blur', validateSchedule);
+  // Picking a Start hour unlocks only the End hours that come after it —
+  // an End tag for an earlier/equal hour stays disabled and unclickable.
+  document.querySelectorAll('.start-radio').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      var day = radio.dataset.day;
+      var startValue = radio.value;
+
+      document.querySelectorAll('.end-radio[data-day="' + day + '"]').forEach(function (endRadio) {
+        var enabled = endRadio.value > startValue;
+        endRadio.disabled = !enabled;
+        if (!enabled && endRadio.checked) {
+          endRadio.checked = false;
+        }
+      });
+
+      validateSchedule();
+    });
+  });
+
+  document.querySelectorAll('.end-radio').forEach(function (radio) {
+    radio.addEventListener('change', validateSchedule);
   });
 
   var fieldValidators = {
