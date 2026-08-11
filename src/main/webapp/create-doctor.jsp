@@ -79,7 +79,7 @@
 
             <div class="mb-4">
               <label for="name" class="block text-sm font-medium text-clinic-900 mb-1.5">Full Name <span class="text-coral-500">*</span></label>
-              <input type="text" id="name" name="name" placeholder="e.g. Nimal Perera" required
+              <input type="text" id="name" name="name" placeholder="e.g. Mujahith Mohamed" required
                      value="<%= vName %>"
                      class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
               <p id="nameError" class="hidden text-xs text-red-600 mt-1.5"></p>
@@ -104,7 +104,7 @@
 
             <div class="mb-6">
               <label for="address" class="block text-sm font-medium text-clinic-900 mb-1.5">Address <span class="text-clinic-700/40 font-normal">(optional)</span></label>
-              <input type="text" id="address" name="address" placeholder="e.g. Kandy"
+              <input type="text" id="address" name="address" placeholder="e.g. Trincomalee"
                      value="<%= vAddress %>"
                      class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
             </div>
