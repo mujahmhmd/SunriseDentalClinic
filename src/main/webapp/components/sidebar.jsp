@@ -96,7 +96,7 @@
       <span class="sidebar-label">Staffs</span>
     </a>
 
-    <a href="doctors.jsp" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors <%= "doctors".equals(activePage) ? "active bg-white/10 text-white" : "text-clinic-50/65 hover:bg-white/5 hover:text-white" %>">
+    <a href="doctors" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors <%= "doctors".equals(activePage) ? "active bg-white/10 text-white" : "text-clinic-50/65 hover:bg-white/5 hover:text-white" %>">
       <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 3.75v5.25a3.75 3.75 0 0 0 7.5 0V3.75" />
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 3.75h-1M13.5 3.75h1" />
