@@ -36,6 +36,50 @@ CREATE TABLE IF NOT EXISTS remember_tokens (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Doctors are a separate concept from users: they never log into the portal,
+-- so there's no username/password/role here — just clinic records staff
+-- manage on their behalf.
+CREATE TABLE IF NOT EXISTS doctors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    nic VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address VARCHAR(255) NULL,
+    slmc_reg_no VARCHAR(30) NOT NULL UNIQUE, -- Sri Lanka Medical Council registration number
+    qualifications VARCHAR(255) NOT NULL,
+    experience_years INT NULL,
+    consultation_fee DECIMAL(10,2) NULL,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Fixed list of specializations a doctor can be tagged with.
+CREATE TABLE IF NOT EXISTS specializations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(60) NOT NULL UNIQUE
+);
+
+-- Many-to-many: a doctor can have more than one specialization.
+CREATE TABLE IF NOT EXISTS doctor_specializations (
+    doctor_id INT NOT NULL,
+    specialization_id INT NOT NULL,
+    PRIMARY KEY (doctor_id, specialization_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
+    FOREIGN KEY (specialization_id) REFERENCES specializations(id) ON DELETE CASCADE
+);
+
+INSERT IGNORE INTO specializations (name) VALUES
+    ('General Dentistry'),
+    ('Orthodontics'),
+    ('Oral & Maxillofacial Surgery'),
+    ('Periodontics'),
+    ('Endodontics'),
+    ('Prosthodontics'),
+    ('Pediatric Dentistry'),
+    ('Cosmetic Dentistry'),
+    ('Oral Pathology'),
+    ('Implantology');
+
 -- Seed accounts (passwords are bcrypt-hashed, never stored in plain text).
 -- IGNORE makes this safe to re-run: rows are skipped (not duplicated or
 -- errored on) if a username already exists from a previous run.
