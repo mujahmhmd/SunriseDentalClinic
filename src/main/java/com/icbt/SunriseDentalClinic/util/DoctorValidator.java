@@ -1,0 +1,75 @@
+package com.icbt.SunriseDentalClinic.util;
+
+import java.util.regex.Pattern;
+
+/**
+ * Server-side mirror of assets/js/doctor-form-validation.js. The JS gives
+ * instant inline feedback; this is the actual source of truth since a
+ * request can always bypass the browser's JS.
+ */
+public final class DoctorValidator {
+
+    // Sri Lankan NIC: old format is 9 digits + V/X (e.g. 912345678V),
+    // new format is 12 digits with no letter (e.g. 200012345678).
+    private static final Pattern NIC_PATTERN = Pattern.compile("^(\\d{9}[VXvx]|\\d{12})$");
+
+    // Sri Lankan local number: 10 digits starting with 0 (e.g. 0712345678).
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^0\\d{9}$");
+
+    // SLMC doesn't publish one rigid public format the way NIC does, so this
+    // is a lenient sanity check (letters/digits/hyphens, 3-15 chars) rather
+    // than an authoritative registration-number validator.
+    private static final Pattern SLMC_PATTERN = Pattern.compile("^[A-Za-z0-9-]{3,15}$");
+
+    private DoctorValidator() {
+    }
+
+    /** @return the first validation error found, or null if everything's valid */
+    public static String validate(String name, String nic, String phone, String slmcRegNo,
+                                   String qualifications, String experienceYears, String consultationFee,
+                                   String[] specializationIds) {
+
+        if (name == null || name.trim().length() < 3) {
+            return "Full name must be at least 3 characters.";
+        }
+        if (nic == null || !NIC_PATTERN.matcher(nic.trim()).matches()) {
+            return "Enter a valid NIC: 9 digits + V/X (e.g. 912345678V) or 12 digits (e.g. 200012345678).";
+        }
+        if (phone == null || !PHONE_PATTERN.matcher(StaffValidator.normalizePhone(phone)).matches()) {
+            return "Enter a valid 10-digit number starting with 0 (e.g. 0712345678).";
+        }
+        if (slmcRegNo == null || !SLMC_PATTERN.matcher(slmcRegNo.trim()).matches()) {
+            return "Enter a valid SLMC registration number (letters, numbers, hyphens, 3-15 characters).";
+        }
+        if (qualifications == null || qualifications.trim().length() < 2) {
+            return "Enter the doctor's qualifications (e.g. BDS).";
+        }
+        if (specializationIds == null || specializationIds.length == 0) {
+            return "Select at least one specialization.";
+        }
+
+        if (experienceYears != null && !experienceYears.trim().isEmpty()) {
+            try {
+                int years = Integer.parseInt(experienceYears.trim());
+                if (years < 0 || years > 60) {
+                    return "Years of experience must be between 0 and 60.";
+                }
+            } catch (NumberFormatException e) {
+                return "Years of experience must be a whole number.";
+            }
+        }
+
+        if (consultationFee != null && !consultationFee.trim().isEmpty()) {
+            try {
+                double fee = Double.parseDouble(consultationFee.trim());
+                if (fee < 0) {
+                    return "Consultation fee can't be negative.";
+                }
+            } catch (NumberFormatException e) {
+                return "Consultation fee must be a valid number.";
+            }
+        }
+
+        return null;
+    }
+}
