@@ -66,36 +66,39 @@
           </div>
           <% } %>
 
-          <form action="editStaff" method="post">
+          <form id="editStaffForm" action="editStaff" method="post" novalidate>
             <input type="hidden" name="id" value="<%= vId %>">
 
             <h2 class="text-xs font-semibold uppercase tracking-wide text-clinic-700/50 mb-3">Personal Details</h2>
 
             <div class="mb-4">
-              <label for="name" class="block text-sm font-medium text-clinic-900 mb-1.5">Full Name</label>
+              <label for="name" class="block text-sm font-medium text-clinic-900 mb-1.5">Full Name <span class="text-coral-500">*</span></label>
               <input type="text" id="name" name="name" placeholder="e.g. Jane Perera" required
                      value="<%= vName %>"
                      class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+              <p id="nameError" class="hidden text-xs text-red-600 mt-1.5"></p>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label for="nic" class="block text-sm font-medium text-clinic-900 mb-1.5">NIC</label>
+                <label for="nic" class="block text-sm font-medium text-clinic-900 mb-1.5">NIC <span class="text-coral-500">*</span></label>
                 <input type="text" id="nic" name="nic" placeholder="e.g. 200012345678" required
                        value="<%= vNic %>"
                        class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+                <p id="nicError" class="hidden text-xs text-red-600 mt-1.5"></p>
               </div>
               <div>
-                <label for="phone" class="block text-sm font-medium text-clinic-900 mb-1.5">Contact Number</label>
-                <input type="text" id="phone" name="phone" placeholder="e.g. 071 234 5678" required
+                <label for="phone" class="block text-sm font-medium text-clinic-900 mb-1.5">Contact Number <span class="text-coral-500">*</span></label>
+                <input type="text" id="phone" name="phone" placeholder="e.g. 0712345678" required
                        value="<%= vPhone %>"
                        class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+                <p id="phoneError" class="hidden text-xs text-red-600 mt-1.5"></p>
               </div>
             </div>
 
             <div class="mb-6">
-              <label for="address" class="block text-sm font-medium text-clinic-900 mb-1.5">Address</label>
-              <input type="text" id="address" name="address" placeholder="e.g. Galle" required
+              <label for="address" class="block text-sm font-medium text-clinic-900 mb-1.5">Address <span class="text-clinic-700/40 font-normal">(optional)</span></label>
+              <input type="text" id="address" name="address" placeholder="e.g. Galle"
                      value="<%= vAddress %>"
                      class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
             </div>
@@ -103,10 +106,11 @@
             <h2 class="text-xs font-semibold uppercase tracking-wide text-clinic-700/50 mb-3 pt-4 border-t border-clinic-100">Login Details</h2>
 
             <div class="mb-4">
-              <label for="username" class="block text-sm font-medium text-clinic-900 mb-1.5">Username</label>
-              <input type="text" id="username" name="username" placeholder="e.g. jane.perera" required
+              <label for="username" class="block text-sm font-medium text-clinic-900 mb-1.5">Username <span class="text-coral-500">*</span></label>
+              <input type="text" id="username" name="username" placeholder="e.g. jane.perera" maxlength="16" required
                      value="<%= vUsername %>"
                      class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+              <p id="usernameError" class="hidden text-xs text-red-600 mt-1.5"></p>
             </div>
 
             <div class="mb-6">
@@ -121,6 +125,7 @@
                   </svg>
                 </button>
               </div>
+              <p id="passwordError" class="hidden text-xs text-red-600 mt-1.5"></p>
             </div>
 
             <button type="submit"
@@ -135,11 +140,14 @@
 
   <jsp:include page="components/toast.jsp" />
 
+  <script src="assets/js/staff-form-validation.js"></script>
   <script>
     function togglePassword() {
       const field = document.getElementById('password');
       field.type = field.type === 'password' ? 'text' : 'password';
     }
+
+    initStaffFormValidation('editStaffForm', { passwordRequired: false });
 
     <% if (request.getAttribute("error") != null) { %>
     showToast('<%= request.getAttribute("error") %>', 'error');

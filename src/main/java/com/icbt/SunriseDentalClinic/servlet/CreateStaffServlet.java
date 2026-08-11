@@ -1,6 +1,7 @@
 package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
+import com.icbt.SunriseDentalClinic.util.StaffValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,9 +30,9 @@ public class CreateStaffServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        if (isBlank(name) || isBlank(nic) || isBlank(address) || isBlank(phone)
-                || isBlank(username) || isBlank(password)) {
-            forwardWithError(request, response, "All fields are required.", name, nic, address, phone, username);
+        String validationError = StaffValidator.validate(name, nic, phone, username, password, true);
+        if (validationError != null) {
+            forwardWithError(request, response, validationError, name, nic, address, phone, username);
             return;
         }
 
@@ -60,8 +61,8 @@ public class CreateStaffServlet extends HttpServlet {
                 ps.setString(2, hashedPassword);
                 ps.setString(3, name.trim());
                 ps.setString(4, nic.trim());
-                ps.setString(5, address.trim());
-                ps.setString(6, phone.trim());
+                ps.setString(5, address == null ? null : address.trim());
+                ps.setString(6, StaffValidator.normalizePhone(phone));
                 ps.executeUpdate();
             }
 
@@ -70,10 +71,6 @@ public class CreateStaffServlet extends HttpServlet {
         }
 
         response.sendRedirect("staffs?success=" + URLEncoder.encode("Staff account created", "UTF-8"));
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
     }
 
     private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String error,

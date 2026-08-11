@@ -1,6 +1,7 @@
 package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
+import com.icbt.SunriseDentalClinic.util.StaffValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -62,8 +63,9 @@ public class EditStaffServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password"); // optional: blank keeps the current password
 
-        if (isBlank(name) || isBlank(nic) || isBlank(address) || isBlank(phone) || isBlank(username)) {
-            forwardWithError(request, response, "All fields except password are required.", id, name, nic, address, phone, username);
+        String validationError = StaffValidator.validate(name, nic, phone, username, password, false);
+        if (validationError != null) {
+            forwardWithError(request, response, validationError, id, name, nic, address, phone, username);
             return;
         }
 
@@ -91,8 +93,8 @@ public class EditStaffServlet extends HttpServlet {
             try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
                 ps.setString(1, name.trim());
                 ps.setString(2, nic.trim());
-                ps.setString(3, address.trim());
-                ps.setString(4, phone.trim());
+                ps.setString(3, address == null ? null : address.trim());
+                ps.setString(4, StaffValidator.normalizePhone(phone));
                 ps.setString(5, username.trim());
                 if (changePassword) {
                     ps.setString(6, BCrypt.hashpw(password, BCrypt.gensalt()));
