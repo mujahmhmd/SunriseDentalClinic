@@ -4,6 +4,8 @@
     response.sendRedirect("login.jsp");
     return;
   }
+  String searchQuery = request.getAttribute("searchQuery") != null ? (String) request.getAttribute("searchQuery") : "";
+  int initialPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,14 +39,107 @@
       <jsp:param name="title" value="Doctors" />
     </jsp:include>
 
-    <!-- Placeholder for now; the doctor records UI will be built later. -->
     <main class="flex-1 p-8">
-      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-8">
-        <h1 class="font-display text-2xl text-clinic-900 mb-1">Doctors</h1>
-        <p class="text-clinic-700/70">This page is coming soon.</p>
+      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm overflow-hidden">
+
+        <!-- Toolbar: search + create -->
+        <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-clinic-100">
+          <div class="relative w-full sm:max-w-xs">
+            <svg class="w-4 h-4 text-clinic-700/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input type="text" id="doctorSearch" value="<%= searchQuery %>" placeholder="Search by name or SLMC reg no"
+                   class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl pl-10 pr-3 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+          </div>
+
+          <a href="create-doctor.jsp"
+             class="inline-flex items-center justify-center gap-2 bg-clinic-800 hover:bg-clinic-900 text-clinic-50 text-sm font-medium rounded-xl px-4 py-2.5 transition shadow-sm shrink-0">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Create Doctor
+          </a>
+        </div>
+
+        <!-- Replaced in place on search/pagination, no full page reload -->
+        <div id="doctorTableContainer">
+          <jsp:include page="components/doctor-table.jsp" />
+        </div>
       </div>
     </main>
   </div>
+
+  <jsp:include page="components/confirm-modal.jsp">
+    <jsp:param name="id" value="deleteDoctorModal" />
+    <jsp:param name="title" value="Remove this doctor?" />
+    <jsp:param name="message" value="This will permanently remove their record. This can't be undone." />
+    <jsp:param name="confirmText" value="Delete" />
+    <jsp:param name="confirmHref" value="#" />
+  </jsp:include>
+
+  <jsp:include page="components/toast.jsp" />
+
+  <script>
+    (function () {
+      var searchInput = document.getElementById('doctorSearch');
+      var container = document.getElementById('doctorTableContainer');
+      var debounceTimer = null;
+      var currentPage = <%= initialPage %>;
+
+      function loadDoctors(query, page, pushState) {
+        var url = 'doctors?q=' + encodeURIComponent(query) + '&page=' + page;
+        fetch(url + '&ajax=1')
+          .then(function (res) { return res.text(); })
+          .then(function (html) {
+            currentPage = page;
+            container.innerHTML = html;
+            if (pushState) {
+              history.pushState({ q: query, page: page }, '', url);
+            }
+          });
+      }
+
+      // Filters as you type, debounced so it doesn't fire a request per keystroke.
+      searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var query = searchInput.value;
+        debounceTimer = setTimeout(function () {
+          loadDoctors(query, 1, true);
+        }, 300);
+      });
+
+      // Pagination links inside the fragment are re-rendered on every load,
+      // so we delegate from the container instead of binding to each link.
+      container.addEventListener('click', function (e) {
+        var link = e.target.closest('.page-link');
+        if (!link || link.classList.contains('pointer-events-none')) return;
+        e.preventDefault();
+        loadDoctors(searchInput.value, link.dataset.page, true);
+      });
+
+      // Supports the browser back/forward buttons since we're pushing state above.
+      window.addEventListener('popstate', function (e) {
+        var state = e.state || { q: '', page: 1 };
+        searchInput.value = state.q;
+        loadDoctors(state.q, state.page, false);
+      });
+    })();
+
+    // Called from the Delete button rendered inside the doctor table fragment.
+    function confirmDeleteDoctor(id, name) {
+      document.querySelector('#deleteDoctorModal p').textContent =
+        'This will permanently remove Dr. ' + name + '’s record. This can’t be undone.';
+      document.querySelector('#deleteDoctorModal button.bg-coral-500').onclick = function () {
+        window.location.href = 'deleteDoctor?id=' + id;
+      };
+      openConfirmModal('deleteDoctorModal');
+    }
+
+    <% if (request.getParameter("success") != null) { %>
+    showToast('<%= request.getParameter("success") %>', 'success');
+    history.replaceState(null, '', 'doctors?q=<%= java.net.URLEncoder.encode(searchQuery, "UTF-8") %>&page=<%= initialPage %>');
+    <% } %>
+  </script>
 
 </body>
 </html>
