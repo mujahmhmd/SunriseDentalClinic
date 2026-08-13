@@ -81,6 +81,23 @@ CREATE TABLE IF NOT EXISTS doctor_schedules (
     FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
 );
 
+-- Patients don't log in either. NIC is nullable since children (a real case
+-- here, given Pediatric Dentistry) don't have one issued in Sri Lanka until
+-- around 15-16, so date_of_birth (not NIC) is the required identity field.
+-- No status column — unlike Staff/Doctor, there's no login or booking
+-- visibility for a patient's own "active" toggle to control; appointment
+-- status will live on the future appointments table instead.
+CREATE TABLE IF NOT EXISTS patients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    nic VARCHAR(20) NULL,
+    gender ENUM('Male', 'Female', 'Other') NULL,
+    address VARCHAR(255) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT IGNORE INTO specializations (name) VALUES
     ('General Dentistry'),
     ('Orthodontics'),
