@@ -110,6 +110,36 @@ INSERT IGNORE INTO specializations (name) VALUES
     ('Oral Pathology'),
     ('Implantology');
 
+-- Treatment types offered by the clinic. Not tied to an appointment at
+-- booking time (the actual treatment isn't known until the doctor sees the
+-- patient) — appointments will instead attach one or more services once
+-- marked complete, so this is just the priced catalog they're chosen from.
+CREATE TABLE IF NOT EXISTS services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    price DECIMAL(10,2) NOT NULL,
+    description VARCHAR(255) NULL,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Standard catalog, kept short rather than exhaustive. Prices are rough
+-- placeholder LKR figures, not verified market rates — edit each one to
+-- your clinic's actual pricing from the Services page.
+INSERT IGNORE INTO services (name, price, description) VALUES
+    ('Dental Consultation', 1500.00, 'Initial examination and diagnosis'),
+    ('Scaling & Polishing', 4500.00, 'Routine cleaning to remove plaque, tartar and stains'),
+    ('Tooth Filling', 5000.00, 'Restoration of a decayed or damaged tooth'),
+    ('Tooth Extraction', 4000.00, 'Removal of a damaged or problematic tooth'),
+    ('Root Canal Treatment', 15000.00, 'Treatment to save an infected or badly decayed tooth'),
+    ('Teeth Whitening', 12000.00, 'Cosmetic whitening of stained or discolored teeth'),
+    ('Dental Crown', 20000.00, 'Cap placed over a damaged or weakened tooth'),
+    ('Dental Bridge', 35000.00, 'Fixed replacement for one or more missing teeth'),
+    ('Dental Implant', 120000.00, 'Permanent replacement for a missing tooth root'),
+    ('Braces / Orthodontic Treatment', 150000.00, 'Teeth alignment and bite correction'),
+    ('Dentures (Full/Partial)', 45000.00, 'Removable replacement for missing teeth'),
+    ('Dental X-Ray', 1000.00, 'Diagnostic imaging of teeth and jaw');
+
 -- Seed accounts (passwords are bcrypt-hashed, never stored in plain text).
 -- IGNORE makes this safe to re-run: rows are skipped (not duplicated or
 -- errored on) if a username already exists from a previous run.
