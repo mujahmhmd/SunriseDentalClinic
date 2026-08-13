@@ -101,9 +101,11 @@ CREATE TABLE IF NOT EXISTS patients (
 -- Books an existing patient in with an existing doctor at a date/time.
 -- Treatment isn't chosen here — the doctor decides what was actually done
 -- during the visit, so services get attached separately once an appointment
--- is marked Completed (a later "appointment_services" join table), not on
--- this row. 'Processing Payment' is reserved for the future
--- complete-appointment payment step; nothing sets it yet.
+-- is marked Completed (the "appointment_services" join table below), not on
+-- this row. Clicking Complete moves status to 'Processing Payment' while the
+-- billing popup is open; it becomes 'Completed' once payment is confirmed
+-- (see ConfirmAppointmentPaymentServlet), or reverts back to 'Scheduled' if
+-- the popup is cancelled (CancelAppointmentPaymentServlet).
 --
 -- No UNIQUE constraint on (doctor_id, date, time): a Cancelled appointment
 -- must free up its slot for rebooking, so the double-booking check is done
@@ -126,6 +128,27 @@ CREATE TABLE IF NOT EXISTS appointments (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
     FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+);
+
+-- Billing snapshot, filled in once payment is confirmed. Kept as columns
+-- (rather than always recomputed from the doctor's current fee) so a later
+-- change to that doctor's consultation_fee never rewrites a bill that's
+-- already been charged. NULL until the appointment is actually paid for.
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS consultation_fee DECIMAL(10,2) NULL AFTER status;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS total_amount DECIMAL(10,2) NULL AFTER consultation_fee;
+
+-- Treatments actually billed on a completed appointment (picked in the
+-- payment popup, not at booking time). service_name/price are a snapshot
+-- at billing time, same reasoning as consultation_fee above — editing the
+-- Services catalog later shouldn't silently change an already-charged bill.
+CREATE TABLE IF NOT EXISTS appointment_services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    appointment_id INT NOT NULL,
+    service_id INT NOT NULL,
+    service_name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES services(id)
 );
 
 INSERT IGNORE INTO specializations (name) VALUES

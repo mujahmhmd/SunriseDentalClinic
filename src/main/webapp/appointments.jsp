@@ -85,8 +85,48 @@
     <jsp:param name="confirmHref" value="#" />
   </jsp:include>
 
+  <!--
+    Complete & Bill popup. Not the generic confirm-modal.jsp since this needs
+    real content (service checkboxes + a running total), not just a yes/no
+    prompt. Opening it (openAppointmentPayment, wired up by
+    appointment-payment.js) moves the appointment to Processing Payment;
+    "Confirm Payment" is a real form submit to confirmAppointmentPayment
+    (marks it Completed and redirects to the billed receipt); Cancel/Escape/
+    backdrop-click revert it back to Scheduled instead of leaving it stuck.
+  -->
+  <div id="paymentModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-clinic-900/40 backdrop-blur-sm px-4">
+    <div class="payment-modal-card bg-white rounded-2xl shadow-xl max-w-md w-full p-6 transition-all duration-200 scale-95 opacity-0">
+      <h3 class="font-display text-lg text-clinic-900 mb-1">Complete &amp; Bill Appointment</h3>
+      <p class="text-sm text-clinic-700/70 mb-4">Tick any treatments performed, then confirm payment.</p>
+
+      <form id="paymentForm" action="confirmAppointmentPayment" method="post">
+        <input type="hidden" name="id" id="paymentAppointmentId">
+
+        <div class="flex items-center justify-between text-sm py-2 border-b border-clinic-100">
+          <span class="text-clinic-700">Consultation Fee</span>
+          <span id="paymentConsultationFee" class="font-medium text-clinic-900">Rs. 0.00</span>
+        </div>
+
+        <div id="paymentServicesList" class="max-h-56 overflow-y-auto divide-y divide-clinic-50"></div>
+
+        <div class="flex items-center justify-between text-sm pt-3 mt-1 border-t border-clinic-100 font-medium">
+          <span class="text-clinic-900">Total</span>
+          <span id="paymentTotal" class="text-clinic-900">Rs. 0.00</span>
+        </div>
+
+        <div class="flex gap-2.5 mt-5">
+          <button type="button" id="paymentCancelBtn"
+                  class="flex-1 rounded-xl py-2.5 text-sm font-medium text-clinic-700 bg-clinic-50 hover:bg-clinic-100 transition-colors">Cancel</button>
+          <button type="submit"
+                  class="flex-1 rounded-xl py-2.5 text-sm font-medium text-white bg-clinic-800 hover:bg-clinic-900 transition-colors">Confirm Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <jsp:include page="components/toast.jsp" />
 
+  <script src="assets/js/appointment-payment.js"></script>
   <script>
     (function () {
       var searchInput = document.getElementById('appointmentSearch');
@@ -130,11 +170,7 @@
 
         var complete = e.target.closest('.complete-appointment');
         if (complete) {
-          fetch('completeAppointment?id=' + complete.dataset.id, { method: 'POST' })
-            .then(function () {
-              loadAppointments(searchInput.value, currentPage, false);
-              showToast('Appointment marked completed', 'success');
-            });
+          openAppointmentPayment(complete.dataset.id);
           return;
         }
 
@@ -157,6 +193,18 @@
         var state = e.state || { q: '', page: 1 };
         searchInput.value = state.q;
         loadAppointments(state.q, state.page, false);
+      });
+
+      initAppointmentPayment({
+        modalId: 'paymentModal',
+        idInputId: 'paymentAppointmentId',
+        feeElId: 'paymentConsultationFee',
+        servicesListId: 'paymentServicesList',
+        totalElId: 'paymentTotal',
+        cancelBtnId: 'paymentCancelBtn',
+        // Cancelling the popup reverts the appointment to Scheduled server-side —
+        // refresh the table so that shows up instead of the stale "Processing Payment" row.
+        onCancelled: function () { loadAppointments(searchInput.value, currentPage, false); }
       });
     })();
 

@@ -1,9 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" buffer="64kb" %>
+<%@ page import="java.util.List, java.util.Map" %>
 <%
   if (session.getAttribute("username") == null) {
     response.sendRedirect("login.jsp");
     return;
   }
+  boolean billed = Boolean.TRUE.equals(request.getAttribute("billed"));
+  List<Map<String, String>> billedServices = (List<Map<String, String>>) request.getAttribute("billedServices");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,6 +63,13 @@
       </svg>
       Appointment booked — here's the receipt.
     </div>
+    <% } else if (request.getParameter("justPaid") != null) { %>
+    <div class="no-print mb-4 rounded-xl bg-clinic-600/10 border border-clinic-600/20 text-clinic-800 text-sm px-4 py-3 flex items-center gap-2">
+      <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+      </svg>
+      Payment confirmed — here's the bill.
+    </div>
     <% } %>
 
     <div class="receipt-card bg-white rounded-2xl border border-clinic-100 shadow-sm p-8">
@@ -107,6 +117,28 @@
         </div>
       </div>
 
+      <% if (billed) { %>
+      <div class="pt-5 mb-5 border-t border-dashed border-clinic-100">
+        <p class="text-xs text-clinic-700/50 mb-2.5">Billing</p>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-clinic-700">Consultation Fee</span>
+            <span class="text-clinic-900">Rs. <%= request.getAttribute("consultationFee") %></span>
+          </div>
+          <% if (billedServices != null) { for (Map<String, String> service : billedServices) { %>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-clinic-700"><%= service.get("name") %></span>
+            <span class="text-clinic-900">Rs. <%= service.get("price") %></span>
+          </div>
+          <% } } %>
+        </div>
+        <div class="flex items-center justify-between text-sm font-medium mt-2.5 pt-2.5 border-t border-clinic-100">
+          <span class="text-clinic-900">Total Paid</span>
+          <span class="text-clinic-900">Rs. <%= request.getAttribute("totalAmount") %></span>
+        </div>
+      </div>
+      <% } %>
+
       <div class="pt-5 border-t border-dashed border-clinic-100 flex items-center justify-between">
         <span class="text-xs text-clinic-700/50">Status</span>
         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-clinic-600/10 text-clinic-700">
@@ -115,7 +147,9 @@
       </div>
     </div>
 
-    <p class="no-print text-center text-xs text-clinic-700/40 mt-5">Please bring this receipt with you to your appointment.</p>
+    <p class="no-print text-center text-xs text-clinic-700/40 mt-5">
+      <%= billed ? "Thank you for your payment." : "Please bring this receipt with you to your appointment." %>
+    </p>
   </div>
 
 </body>

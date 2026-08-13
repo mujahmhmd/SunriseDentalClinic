@@ -13,30 +13,25 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Marks a Scheduled appointment Completed directly. This is the seam where
- * the planned payment step (Complete -> "Processing Payment" popup -> paid
- * -> Completed, plus attaching the Service(s) actually performed) will slot
- * in later; nothing sets 'Processing Payment' yet.
+ * Backs out of the payment popup without charging anything — the appointment
+ * goes back to Scheduled so it isn't left stuck in Processing Payment.
  */
-@WebServlet("/completeAppointment")
-public class CompleteAppointmentServlet extends HttpServlet {
+@WebServlet("/cancelAppointmentPayment")
+public class CancelAppointmentPaymentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String id = request.getParameter("id");
-
-        // Only a Scheduled appointment can be completed — guards against a
-        // stale/duplicate click flipping an already Cancelled/Completed row.
-        String sql = "UPDATE appointments SET status = 'Completed' WHERE id = ? AND status = 'Scheduled'";
+        String sql = "UPDATE appointments SET status = 'Scheduled' WHERE id = ? AND status = 'Processing Payment'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new ServletException("Database error while completing appointment", e);
+            throw new ServletException("Database error while cancelling appointment payment", e);
         }
 
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
