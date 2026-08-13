@@ -21,7 +21,30 @@ public final class PatientValidator {
 
     private static final int MAX_AGE_YEARS = 120;
 
+    // Matches the code printed on a patient's ID card (formatPatientId below),
+    // typed or scanned back in when searching for them — case-insensitive
+    // and tolerant of the zero-padding since staff will be reading it off a
+    // printed card, not copy-pasting it.
+    private static final Pattern PATIENT_CODE_PATTERN = Pattern.compile("^SDCP0*([1-9][0-9]*)$", Pattern.CASE_INSENSITIVE);
+
     private PatientValidator() {
+    }
+
+    /** Patient-facing ID card reference — the row id, zero-padded and prefixed. */
+    public static String formatPatientId(int id) {
+        return String.format("SDCP%06d", id);
+    }
+
+    /** @return the patient row id if {@code query} looks like a printed patient code, otherwise null */
+    public static Integer parsePatientCode(String query) {
+        if (query == null) return null;
+        java.util.regex.Matcher matcher = PATIENT_CODE_PATTERN.matcher(query.trim());
+        if (!matcher.matches()) return null;
+        try {
+            return Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**

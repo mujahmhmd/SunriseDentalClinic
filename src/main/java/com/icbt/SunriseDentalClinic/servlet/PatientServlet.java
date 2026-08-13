@@ -1,6 +1,7 @@
 package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
+import com.icbt.SunriseDentalClinic.util.PatientValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -76,7 +77,9 @@ public class PatientServlet extends HttpServlet {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, String> row = new LinkedHashMap<>();
-                        row.put("id", rs.getString("id"));
+                        int id = rs.getInt("id");
+                        row.put("id", String.valueOf(id));
+                        row.put("patientCode", PatientValidator.formatPatientId(id));
                         row.put("name", rs.getString("name"));
 
                         LocalDate dob = rs.getDate("date_of_birth").toLocalDate();

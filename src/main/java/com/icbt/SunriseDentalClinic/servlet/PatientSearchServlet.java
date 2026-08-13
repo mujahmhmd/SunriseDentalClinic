@@ -1,6 +1,7 @@
 package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
+import com.icbt.SunriseDentalClinic.util.PatientValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -32,8 +33,16 @@ public class PatientSearchServlet extends HttpServlet {
         if (q == null) q = "";
         String likeTerm = "%" + q.trim() + "%";
 
+        // Staff reading (or scanning) the code off a printed ID card can
+        // paste/type it straight into the search box — "SDCP000007" isn't a
+        // real column, so it's decoded back to the row id and matched
+        // alongside the usual name/phone/NIC search.
+        Integer patientCodeId = PatientValidator.parsePatientCode(q);
+
         String sql = "SELECT id, name, phone, nic FROM patients " +
-                "WHERE name LIKE ? OR phone LIKE ? OR nic LIKE ? ORDER BY name LIMIT ?";
+                "WHERE name LIKE ? OR phone LIKE ? OR nic LIKE ?" +
+                (patientCodeId != null ? " OR id = ?" : "") +
+                " ORDER BY name LIMIT ?";
 
         StringBuilder json = new StringBuilder("[");
         try (Connection conn = DBConnection.getConnection();
@@ -41,7 +50,11 @@ public class PatientSearchServlet extends HttpServlet {
             ps.setString(1, likeTerm);
             ps.setString(2, likeTerm);
             ps.setString(3, likeTerm);
-            ps.setInt(4, MAX_RESULTS);
+            int nextParam = 4;
+            if (patientCodeId != null) {
+                ps.setInt(nextParam++, patientCodeId);
+            }
+            ps.setInt(nextParam, MAX_RESULTS);
 
             try (ResultSet rs = ps.executeQuery()) {
                 boolean first = true;
