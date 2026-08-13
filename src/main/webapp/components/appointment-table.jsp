@@ -40,6 +40,7 @@
            String status = appt.get("status");
            boolean scheduled = "Scheduled".equals(status);
            boolean processingPayment = "Processing Payment".equals(status);
+           boolean reopenable = "Completed".equals(status) || "Cancelled".equals(status);
            String badgeClass;
            if ("Completed".equals(status)) badgeClass = "bg-clinic-600/10 text-clinic-700";
            else if ("Cancelled".equals(status)) badgeClass = "bg-red-50 text-red-600";
@@ -79,6 +80,13 @@
             <button type="button" class="cancel-appointment p-2 rounded-lg text-clinic-700/60 hover:bg-red-50 hover:text-red-600 transition-colors" data-id="<%= id %>" aria-label="Cancel appointment" title="Cancel appointment">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <% } %>
+            <% if (reopenable) { %>
+            <button type="button" class="reopen-appointment p-2 rounded-lg text-clinic-700/60 hover:bg-clinic-50 hover:text-clinic-900 transition-colors" data-id="<%= id %>" aria-label="Reopen appointment" title="Reopen appointment">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
               </svg>
             </button>
             <% } %>

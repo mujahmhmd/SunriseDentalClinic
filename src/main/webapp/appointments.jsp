@@ -85,6 +85,14 @@
     <jsp:param name="confirmHref" value="#" />
   </jsp:include>
 
+  <jsp:include page="components/confirm-modal.jsp">
+    <jsp:param name="id" value="reopenAppointmentModal" />
+    <jsp:param name="title" value="Reopen this appointment?" />
+    <jsp:param name="message" value="It goes back to Scheduled. Any billed services and the total charged will be cleared - you'll need to confirm payment again if you re-complete it." />
+    <jsp:param name="confirmText" value="Reopen" />
+    <jsp:param name="confirmHref" value="#" />
+  </jsp:include>
+
   <!--
     Complete & Bill popup. Not the generic confirm-modal.jsp since this needs
     real content (service checkboxes + a running total), not just a yes/no
@@ -185,6 +193,20 @@
             closeConfirmModal('cancelAppointmentModal');
           };
           openConfirmModal('cancelAppointmentModal');
+          return;
+        }
+
+        var reopen = e.target.closest('.reopen-appointment');
+        if (reopen) {
+          document.querySelector('#reopenAppointmentModal button.bg-coral-500').onclick = function () {
+            fetch('reopenAppointment?id=' + reopen.dataset.id, { method: 'POST' })
+              .then(function () {
+                loadAppointments(searchInput.value, currentPage, false);
+                showToast('Appointment reopened', 'success');
+              });
+            closeConfirmModal('reopenAppointmentModal');
+          };
+          openConfirmModal('reopenAppointmentModal');
         }
       });
 
