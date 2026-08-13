@@ -123,6 +123,7 @@
                 <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full border border-clinic-200 bg-white shrink-0"></span>Available</span>
                 <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400 shrink-0"></span>Already Booked</span>
                 <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>Patient Already Booked</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></span>Doctor Not Visiting</span>
               </div>
               <p id="appointmentTimeError" class="hidden text-xs text-red-600 mt-1.5"></p>
             </div>
