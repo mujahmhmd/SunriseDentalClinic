@@ -75,15 +75,16 @@ public final class DoctorValidator {
             }
         }
 
-        if (consultationFee != null && !consultationFee.trim().isEmpty()) {
-            try {
-                double fee = Double.parseDouble(consultationFee.trim());
-                if (fee < 0) {
-                    return "Consultation fee can't be negative.";
-                }
-            } catch (NumberFormatException e) {
-                return "Consultation fee must be a valid number.";
+        if (consultationFee == null || consultationFee.trim().isEmpty()) {
+            return "Enter a consultation fee.";
+        }
+        try {
+            double fee = Double.parseDouble(consultationFee.trim());
+            if (fee <= 0) {
+                return "Consultation fee must be greater than 0.";
             }
+        } catch (NumberFormatException e) {
+            return "Consultation fee must be a valid number.";
         }
 
         return null;

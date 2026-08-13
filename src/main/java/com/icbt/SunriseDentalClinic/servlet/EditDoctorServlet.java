@@ -50,8 +50,7 @@ public class EditDoctorServlet extends HttpServlet {
                     request.setAttribute("qualifications", rs.getString("qualifications"));
                     Object years = rs.getObject("experience_years");
                     request.setAttribute("experienceYears", years == null ? "" : String.valueOf(years));
-                    Object fee = rs.getObject("consultation_fee");
-                    request.setAttribute("consultationFee", fee == null ? "" : String.valueOf(fee));
+                    request.setAttribute("consultationFee", rs.getBigDecimal("consultation_fee").toPlainString());
                 }
             }
 
@@ -149,7 +148,7 @@ public class EditDoctorServlet extends HttpServlet {
                 ps.setString(5, slmcRegNo.trim());
                 ps.setString(6, qualifications.trim());
                 ps.setObject(7, experienceYears == null || experienceYears.trim().isEmpty() ? null : Integer.parseInt(experienceYears.trim()));
-                ps.setObject(8, consultationFee == null || consultationFee.trim().isEmpty() ? null : Double.parseDouble(consultationFee.trim()));
+                ps.setDouble(8, Double.parseDouble(consultationFee.trim()));
                 ps.setString(9, id);
                 ps.executeUpdate();
             }

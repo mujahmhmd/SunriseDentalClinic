@@ -114,13 +114,9 @@ function initDoctorFormValidation(formId) {
 
   function validateConsultationFee() {
     var value = document.getElementById('consultationFee').value.trim();
-    if (value === '') {
-      clearFieldError('consultationFee');
-      return true;
-    }
     var fee = Number(value);
-    if (isNaN(fee) || fee < 0) {
-      showFieldError('consultationFee', "Can't be negative.");
+    if (value === '' || isNaN(fee) || fee <= 0) {
+      showFieldError('consultationFee', 'Enter a fee greater than 0.');
       return false;
     }
     clearFieldError('consultationFee');

@@ -91,7 +91,7 @@ public class CreateDoctorServlet extends HttpServlet {
                 ps.setString(5, slmcRegNo.trim());
                 ps.setString(6, qualifications.trim());
                 ps.setObject(7, experienceYears == null || experienceYears.trim().isEmpty() ? null : Integer.parseInt(experienceYears.trim()));
-                ps.setObject(8, consultationFee == null || consultationFee.trim().isEmpty() ? null : Double.parseDouble(consultationFee.trim()));
+                ps.setDouble(8, Double.parseDouble(consultationFee.trim()));
                 ps.executeUpdate();
 
                 try (ResultSet keys = ps.getGeneratedKeys()) {

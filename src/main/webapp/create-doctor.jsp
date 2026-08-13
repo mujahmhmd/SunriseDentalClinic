@@ -158,8 +158,8 @@
                 <p id="experienceYearsError" class="hidden text-xs text-red-600 mt-1.5"></p>
               </div>
               <div>
-                <label for="consultationFee" class="block text-sm font-medium text-clinic-900 mb-1.5">Consultation Fee <span class="text-clinic-700/40 font-normal">(optional)</span></label>
-                <input type="text" id="consultationFee" name="consultationFee" placeholder="e.g. 2500"
+                <label for="consultationFee" class="block text-sm font-medium text-clinic-900 mb-1.5">Consultation Fee <span class="text-coral-500">*</span></label>
+                <input type="text" id="consultationFee" name="consultationFee" placeholder="e.g. 2500" required
                        value="<%= vFee %>"
                        class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
                 <p id="consultationFeeError" class="hidden text-xs text-red-600 mt-1.5"></p>

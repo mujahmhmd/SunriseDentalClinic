@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS doctors (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Consultation fee is now required (appointment billing needs a real
+-- number, not a blank) — backfill any existing NULLs first so promoting
+-- the column to NOT NULL doesn't fail on doctors added before this was
+-- mandatory. Safe to re-run: the UPDATE only touches remaining NULLs, and
+-- MODIFYing to the same definition twice is a no-op.
+UPDATE doctors SET consultation_fee = 0.00 WHERE consultation_fee IS NULL;
+ALTER TABLE doctors MODIFY COLUMN consultation_fee DECIMAL(10,2) NOT NULL;
+
 -- Fixed list of specializations a doctor can be tagged with.
 CREATE TABLE IF NOT EXISTS specializations (
     id INT AUTO_INCREMENT PRIMARY KEY,
