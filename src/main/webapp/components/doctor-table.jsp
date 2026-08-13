@@ -29,6 +29,7 @@
         <th class="py-3 pr-4 font-medium">SLMC Reg No</th>
         <th class="py-3 pr-4 font-medium">Specializations</th>
         <th class="py-3 pr-4 font-medium">Phone</th>
+        <th class="py-3 pr-4 font-medium">Status</th>
         <th class="py-3 pr-4 font-medium text-right">Actions</th>
       </tr>
     </thead>
@@ -36,6 +37,7 @@
       <% if (doctorList != null) { for (Map<String, String> doctor : doctorList) {
            String id = doctor.get("id");
            String specializations = doctor.get("specializations");
+           boolean active = "active".equals(doctor.get("status"));
       %>
       <tr class="hover:bg-clinic-50/60 transition-colors">
         <td class="py-3.5 pr-4 font-medium text-clinic-900">Dr. <%= doctor.get("name") %></td>
@@ -48,6 +50,14 @@
           </div>
         </td>
         <td class="py-3.5 pr-4 text-clinic-700/60"><%= doctor.get("phone") %></td>
+        <td class="py-3.5 pr-4">
+          <button type="button" class="status-toggle inline-flex items-center gap-2" data-id="<%= id %>">
+            <span class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors <%= active ? "bg-clinic-600" : "bg-clinic-900/15" %>">
+              <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform <%= active ? "translate-x-[1.125rem]" : "translate-x-1" %>"></span>
+            </span>
+            <span class="text-xs font-medium <%= active ? "text-clinic-700" : "text-clinic-700/50" %>"><%= active ? "Active" : "Inactive" %></span>
+          </button>
+        </td>
         <td class="py-3.5 pr-4">
           <div class="flex items-center justify-end gap-1">
             <a href="editDoctor?id=<%= id %>" aria-label="Edit"

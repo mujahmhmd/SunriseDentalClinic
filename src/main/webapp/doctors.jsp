@@ -108,13 +108,26 @@
         }, 300);
       });
 
-      // Pagination links inside the fragment are re-rendered on every load,
-      // so we delegate from the container instead of binding to each link.
+      // Pagination links and status toggles inside the fragment are
+      // re-rendered on every load, so we delegate from the container
+      // instead of binding to each one individually.
       container.addEventListener('click', function (e) {
         var link = e.target.closest('.page-link');
-        if (!link || link.classList.contains('pointer-events-none')) return;
-        e.preventDefault();
-        loadDoctors(searchInput.value, link.dataset.page, true);
+        if (link) {
+          if (link.classList.contains('pointer-events-none')) return;
+          e.preventDefault();
+          loadDoctors(searchInput.value, link.dataset.page, true);
+          return;
+        }
+
+        var toggle = e.target.closest('.status-toggle');
+        if (toggle) {
+          fetch('toggleDoctorStatus?id=' + toggle.dataset.id, { method: 'POST' })
+            .then(function () {
+              loadDoctors(searchInput.value, currentPage, false);
+              showToast('Status updated', 'success');
+            });
+        }
       });
 
       // Supports the browser back/forward buttons since we're pushing state above.

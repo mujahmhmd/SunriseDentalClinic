@@ -40,7 +40,7 @@ public class DoctorServlet extends HttpServlet {
         String likeTerm = "%" + search + "%";
 
         String countSql = "SELECT COUNT(*) FROM doctors WHERE name LIKE ? OR slmc_reg_no LIKE ?";
-        String listSql = "SELECT d.id, d.name, d.slmc_reg_no, d.phone, d.qualifications, " +
+        String listSql = "SELECT d.id, d.name, d.slmc_reg_no, d.phone, d.qualifications, d.status, " +
                 "GROUP_CONCAT(s.name ORDER BY s.name SEPARATOR ', ') AS specializations " +
                 "FROM doctors d " +
                 "LEFT JOIN doctor_specializations ds ON ds.doctor_id = d.id " +
@@ -80,6 +80,7 @@ public class DoctorServlet extends HttpServlet {
                         row.put("slmcRegNo", rs.getString("slmc_reg_no"));
                         row.put("phone", rs.getString("phone"));
                         row.put("qualifications", rs.getString("qualifications"));
+                        row.put("status", rs.getString("status"));
                         row.put("specializations", rs.getString("specializations"));
                         doctorList.add(row);
                     }
