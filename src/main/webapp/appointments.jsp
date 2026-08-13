@@ -4,6 +4,8 @@
     response.sendRedirect("login.jsp");
     return;
   }
+  String searchQuery = request.getAttribute("searchQuery") != null ? (String) request.getAttribute("searchQuery") : "";
+  int initialPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
 %>
 <!DOCTYPE html>
 <html lang="en" class="h-full overflow-hidden">
@@ -37,14 +39,140 @@
       <jsp:param name="title" value="Appointments" />
     </jsp:include>
 
-    <!-- Placeholder for now; the appointment scheduling UI will be built later. -->
     <main class="flex-1 p-8">
-      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-8">
-        <h1 class="font-display text-2xl text-clinic-900 mb-1">Appointments</h1>
-        <p class="text-clinic-700/70">This page is coming soon.</p>
+      <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm overflow-hidden">
+
+        <!-- Toolbar: search + create -->
+        <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-clinic-100">
+          <div class="relative w-full sm:max-w-xs">
+            <svg class="w-4 h-4 text-clinic-700/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input type="text" id="appointmentSearch" value="<%= searchQuery %>" placeholder="Search by patient or doctor name"
+                   class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl pl-10 pr-3 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+          </div>
+
+          <a href="createAppointment"
+             class="inline-flex items-center justify-center gap-2 bg-clinic-800 hover:bg-clinic-900 text-clinic-50 text-sm font-medium rounded-xl px-4 py-2.5 transition shadow-sm shrink-0">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Book Appointment
+          </a>
+        </div>
+
+        <!-- Replaced in place on search/pagination, no full page reload -->
+        <div id="appointmentTableContainer">
+          <jsp:include page="components/appointment-table.jsp" />
+        </div>
       </div>
     </main>
   </div>
+
+  <jsp:include page="components/confirm-modal.jsp">
+    <jsp:param name="id" value="deleteAppointmentModal" />
+    <jsp:param name="title" value="Remove this appointment?" />
+    <jsp:param name="message" value="This will permanently remove it. This can't be undone." />
+    <jsp:param name="confirmText" value="Delete" />
+    <jsp:param name="confirmHref" value="#" />
+  </jsp:include>
+
+  <jsp:include page="components/confirm-modal.jsp">
+    <jsp:param name="id" value="cancelAppointmentModal" />
+    <jsp:param name="title" value="Cancel this appointment?" />
+    <jsp:param name="message" value="The patient will need to be rebooked separately. This can't be undone." />
+    <jsp:param name="confirmText" value="Cancel Appointment" />
+    <jsp:param name="confirmHref" value="#" />
+  </jsp:include>
+
+  <jsp:include page="components/toast.jsp" />
+
+  <script>
+    (function () {
+      var searchInput = document.getElementById('appointmentSearch');
+      var container = document.getElementById('appointmentTableContainer');
+      var debounceTimer = null;
+      var currentPage = <%= initialPage %>;
+
+      function loadAppointments(query, page, pushState) {
+        var url = 'appointments?q=' + encodeURIComponent(query) + '&page=' + page;
+        fetch(url + '&ajax=1')
+          .then(function (res) { return res.text(); })
+          .then(function (html) {
+            currentPage = page;
+            container.innerHTML = html;
+            if (pushState) {
+              history.pushState({ q: query, page: page }, '', url);
+            }
+          });
+      }
+
+      // Filters as you type, debounced so it doesn't fire a request per keystroke.
+      searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var query = searchInput.value;
+        debounceTimer = setTimeout(function () {
+          loadAppointments(query, 1, true);
+        }, 300);
+      });
+
+      // Pagination links and status actions inside the fragment are
+      // re-rendered on every load, so we delegate from the container
+      // instead of binding to each one individually.
+      container.addEventListener('click', function (e) {
+        var link = e.target.closest('.page-link');
+        if (link) {
+          if (link.classList.contains('pointer-events-none')) return;
+          e.preventDefault();
+          loadAppointments(searchInput.value, link.dataset.page, true);
+          return;
+        }
+
+        var complete = e.target.closest('.complete-appointment');
+        if (complete) {
+          fetch('completeAppointment?id=' + complete.dataset.id, { method: 'POST' })
+            .then(function () {
+              loadAppointments(searchInput.value, currentPage, false);
+              showToast('Appointment marked completed', 'success');
+            });
+          return;
+        }
+
+        var cancel = e.target.closest('.cancel-appointment');
+        if (cancel) {
+          document.querySelector('#cancelAppointmentModal button.bg-coral-500').onclick = function () {
+            fetch('cancelAppointment?id=' + cancel.dataset.id, { method: 'POST' })
+              .then(function () {
+                loadAppointments(searchInput.value, currentPage, false);
+                showToast('Appointment cancelled', 'success');
+              });
+            closeConfirmModal('cancelAppointmentModal');
+          };
+          openConfirmModal('cancelAppointmentModal');
+        }
+      });
+
+      // Supports the browser back/forward buttons since we're pushing state above.
+      window.addEventListener('popstate', function (e) {
+        var state = e.state || { q: '', page: 1 };
+        searchInput.value = state.q;
+        loadAppointments(state.q, state.page, false);
+      });
+    })();
+
+    // Called from the Delete button rendered inside the appointment table fragment.
+    function confirmDeleteAppointment(id) {
+      document.querySelector('#deleteAppointmentModal button.bg-coral-500').onclick = function () {
+        window.location.href = 'deleteAppointment?id=' + id;
+      };
+      openConfirmModal('deleteAppointmentModal');
+    }
+
+    <% if (request.getParameter("success") != null) { %>
+    showToast('<%= request.getParameter("success") %>', 'success');
+    history.replaceState(null, '', 'appointments?q=<%= java.net.URLEncoder.encode(searchQuery, "UTF-8") %>&page=<%= initialPage %>');
+    <% } %>
+  </script>
 
 </body>
 </html>

@@ -98,6 +98,36 @@ CREATE TABLE IF NOT EXISTS patients (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Books an existing patient in with an existing doctor at a date/time.
+-- Treatment isn't chosen here — the doctor decides what was actually done
+-- during the visit, so services get attached separately once an appointment
+-- is marked Completed (a later "appointment_services" join table), not on
+-- this row. 'Processing Payment' is reserved for the future
+-- complete-appointment payment step; nothing sets it yet.
+--
+-- No UNIQUE constraint on (doctor_id, date, time): a Cancelled appointment
+-- must free up its slot for rebooking, so the double-booking check is done
+-- in application code instead (excluding Cancelled rows) rather than at the
+-- DB level.
+--
+-- There's no separate appointment-number column — the patient-facing
+-- "SDC000001" reference shown on the receipt is just the id, zero-padded
+-- and prefixed at display time (see AppointmentValidator.formatAppointmentNumber),
+-- since the id already is a unique, ever-increasing identifier.
+CREATE TABLE IF NOT EXISTS appointments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    appointment_date DATE NOT NULL,
+    appointment_time TIME NOT NULL,
+    reason_for_visit VARCHAR(255) NULL,
+    notes VARCHAR(500) NULL,
+    status ENUM('Scheduled', 'Processing Payment', 'Completed', 'Cancelled') NOT NULL DEFAULT 'Scheduled',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+);
+
 INSERT IGNORE INTO specializations (name) VALUES
     ('General Dentistry'),
     ('Orthodontics'),
