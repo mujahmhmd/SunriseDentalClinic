@@ -128,7 +128,7 @@
       <span class="sidebar-label">Services</span>
     </a>
 
-    <a href="billing.jsp" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors <%= "billing".equals(activePage) ? "active bg-white/10 text-white" : "text-clinic-50/65 hover:bg-white/5 hover:text-white" %>">
+    <a href="billing" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors <%= "billing".equals(activePage) ? "active bg-white/10 text-white" : "text-clinic-50/65 hover:bg-white/5 hover:text-white" %>">
       <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
       </svg>

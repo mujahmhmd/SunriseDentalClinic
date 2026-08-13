@@ -7,6 +7,11 @@
   }
   boolean billed = Boolean.TRUE.equals(request.getAttribute("billed"));
   List<Map<String, String>> billedServices = (List<Map<String, String>>) request.getAttribute("billedServices");
+  // Printed from the Billing ledger vs. the Appointments list — send the
+  // Back link to wherever the click actually came from.
+  boolean fromBilling = "billing".equals(request.getParameter("from"));
+  String backHref = fromBilling ? "billing" : "appointments";
+  String backLabel = fromBilling ? "Back to Billing" : "Back to Appointments";
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,11 +46,11 @@
   <div class="max-w-xl mx-auto">
 
     <div class="no-print flex items-center justify-between mb-5">
-      <a href="appointments" class="inline-flex items-center gap-1.5 text-sm text-clinic-700/70 hover:text-clinic-900 transition-colors">
+      <a href="<%= backHref %>" class="inline-flex items-center gap-1.5 text-sm text-clinic-700/70 hover:text-clinic-900 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
         </svg>
-        Back to Appointments
+        <%= backLabel %>
       </a>
       <button type="button" onclick="window.print()"
               class="inline-flex items-center gap-2 bg-clinic-800 hover:bg-clinic-900 text-clinic-50 text-sm font-medium rounded-xl px-4 py-2.5 transition shadow-sm">

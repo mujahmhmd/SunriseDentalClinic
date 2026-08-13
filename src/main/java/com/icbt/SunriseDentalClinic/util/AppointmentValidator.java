@@ -2,6 +2,8 @@ package com.icbt.SunriseDentalClinic.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Server-side mirror of assets/js/appointment-form-validation.js. The JS
@@ -9,6 +11,11 @@ import java.time.format.DateTimeParseException;
  * request can always bypass the browser's JS.
  */
 public final class AppointmentValidator {
+
+    // Matches the "SDC000001" reference printed on a receipt, typed or
+    // pasted back in when searching for it — case-insensitive and tolerant
+    // of the zero-padding, same reasoning as PatientValidator's patient-code pattern.
+    private static final Pattern APPOINTMENT_NUMBER_PATTERN = Pattern.compile("^SDC0*([1-9][0-9]*)$", Pattern.CASE_INSENSITIVE);
 
     /**
      * Bookable slots within clinic hours (9 AM-5 PM), 30 minutes apart, last
@@ -70,5 +77,17 @@ public final class AppointmentValidator {
     /** Patient-facing booking reference — just the row id, zero-padded and prefixed. */
     public static String formatAppointmentNumber(int id) {
         return String.format("SDC%06d", id);
+    }
+
+    /** @return the appointment row id if {@code query} looks like a printed appointment number, otherwise null */
+    public static Integer parseAppointmentNumber(String query) {
+        if (query == null) return null;
+        Matcher matcher = APPOINTMENT_NUMBER_PATTERN.matcher(query.trim());
+        if (!matcher.matches()) return null;
+        try {
+            return Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

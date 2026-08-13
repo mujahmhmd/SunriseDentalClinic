@@ -90,10 +90,22 @@
 
     var labelSpan = trigger.querySelector('span');
 
+    var PANEL_WIDTH = 288; // px, matches w-72 below
+
     var panel = document.createElement('div');
     panel.setAttribute('role', 'dialog');
-    panel.className = 'hidden absolute z-20 mt-1.5 w-72 bg-white border border-clinic-100 rounded-xl shadow-lg p-3';
+    panel.className = 'hidden absolute z-20 mt-1.5 w-72 left-0 bg-white border border-clinic-100 rounded-xl shadow-lg p-3';
     wrapper.appendChild(panel);
+
+    // Left-aligned (the default) runs the panel off the right edge of the
+    // viewport for a trigger sitting near it (e.g. a "To" date field at the
+    // end of a filter row) — flip to right-aligned instead whenever that
+    // would happen, so the whole calendar stays on screen.
+    function positionPanel() {
+      var overflowsRight = wrapper.getBoundingClientRect().left + PANEL_WIDTH > window.innerWidth;
+      panel.classList.toggle('left-0', !overflowsRight);
+      panel.classList.toggle('right-0', overflowsRight);
+    }
 
     var selected = parseIso(input.value);
     var focused = selected || new Date();
@@ -250,6 +262,7 @@
       view = 'days';
       render();
       panel.classList.remove('hidden');
+      positionPanel();
       trigger.setAttribute('aria-expanded', 'true');
       focusCell();
     }
@@ -372,6 +385,21 @@
     });
 
     syncLabel();
+
+    // Lets a consuming page link two pickers into a from/to range (e.g.
+    // Billing's date filters) — updating the min/max after the fact, not
+    // just once from the min/max attributes at enhance time, since the
+    // constraint depends on whatever's picked in the *other* field.
+    input.customDate = {
+      setMin: function (dateStr) {
+        minDate = dateStr ? parseIso(dateStr) : null;
+        if (isOpen()) render();
+      },
+      setMax: function (dateStr) {
+        maxDate = dateStr ? parseIso(dateStr) : null;
+        if (isOpen()) render();
+      }
+    };
   }
 
   document.querySelectorAll('input[type="date"][data-custom-date]').forEach(enhance);
