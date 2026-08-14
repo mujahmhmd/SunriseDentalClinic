@@ -145,6 +145,17 @@ CREATE TABLE IF NOT EXISTS appointments (
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS consultation_fee DECIMAL(10,2) NULL AFTER status;
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS total_amount DECIMAL(10,2) NULL AFTER consultation_fee;
 
+-- Reopen trace. Staff (not just admin) can reopen a Completed/Cancelled
+-- appointment — needed so a mistake can be fixed even when no admin is
+-- around — but that clears real billing data, so who/when/why and what the
+-- total was get kept here for admin to review afterward. Only the most
+-- recent reopen is kept (overwritten each time), not a full history, to
+-- keep this simple; that's enough for "who cleared this bill and why".
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reopened_by VARCHAR(100) NULL AFTER total_amount;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reopened_at TIMESTAMP NULL AFTER reopened_by;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reopen_reason VARCHAR(255) NULL AFTER reopened_at;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reopen_previous_total DECIMAL(10,2) NULL AFTER reopen_reason;
+
 -- Treatments actually billed on a completed appointment (picked in the
 -- payment popup, not at booking time). service_name/price are a snapshot
 -- at billing time, same reasoning as consultation_fee above — editing the

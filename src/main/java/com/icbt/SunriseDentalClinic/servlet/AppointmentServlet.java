@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -44,7 +46,8 @@ public class AppointmentServlet extends HttpServlet {
                 "JOIN patients p ON p.id = a.patient_id JOIN doctors d ON d.id = a.doctor_id " +
                 "WHERE p.name LIKE ? OR d.name LIKE ?";
         String listSql = "SELECT a.id, p.name AS patient_name, p.phone AS patient_phone, " +
-                "d.name AS doctor_name, a.appointment_date, a.appointment_time, a.reason_for_visit, a.status " +
+                "d.name AS doctor_name, a.appointment_date, a.appointment_time, a.reason_for_visit, a.status, " +
+                "a.reopened_by, a.reopened_at, a.reopen_reason, a.reopen_previous_total " +
                 "FROM appointments a " +
                 "JOIN patients p ON p.id = a.patient_id JOIN doctors d ON d.id = a.doctor_id " +
                 "WHERE p.name LIKE ? OR d.name LIKE ? " +
@@ -69,6 +72,8 @@ public class AppointmentServlet extends HttpServlet {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
             SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+            SimpleDateFormat reopenedAtFormat = new SimpleDateFormat("MMM d, h:mm a");
+            DecimalFormat money = new DecimalFormat("#,##0.00");
 
             try (PreparedStatement ps = conn.prepareStatement(listSql)) {
                 ps.setString(1, likeTerm);
@@ -90,6 +95,17 @@ public class AppointmentServlet extends HttpServlet {
                         String reason = rs.getString("reason_for_visit");
                         row.put("reason", reason == null ? "" : reason);
                         row.put("status", rs.getString("status"));
+
+                        String reopenedBy = rs.getString("reopened_by");
+                        if (reopenedBy != null) {
+                            row.put("reopenedBy", reopenedBy);
+                            row.put("reopenedAt", reopenedAtFormat.format(rs.getTimestamp("reopened_at")));
+                            String reopenReason = rs.getString("reopen_reason");
+                            row.put("reopenReason", reopenReason == null ? "" : reopenReason);
+                            BigDecimal previousTotal = rs.getBigDecimal("reopen_previous_total");
+                            row.put("reopenPreviousTotal", previousTotal == null ? "" : money.format(previousTotal));
+                        }
+
                         appointmentList.add(row);
                     }
                 }

@@ -60,6 +60,16 @@
         <td class="py-3.5 pr-4 text-clinic-700/60 max-w-[12rem] truncate"><%= appt.get("reason") %></td>
         <td class="py-3.5 pr-4">
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= badgeClass %>"><%= status %></span>
+          <% String reopenedBy = appt.get("reopenedBy");
+             if (reopenedBy != null) {
+               String reopenTooltip = "Reason: " + (appt.get("reopenReason").isEmpty() ? "(none given)" : appt.get("reopenReason"));
+               String previousTotal = appt.get("reopenPreviousTotal");
+               if (previousTotal != null && !previousTotal.isEmpty()) reopenTooltip += " — Previous total: Rs. " + previousTotal;
+          %>
+          <p class="text-[11px] text-clinic-700/50 mt-1 cursor-help" title="<%= reopenTooltip %>">
+            &#8634; Reopened by <%= reopenedBy %> &middot; <%= appt.get("reopenedAt") %>
+          </p>
+          <% } %>
         </td>
         <td class="py-3.5 pr-4">
           <div class="flex items-center justify-end gap-1">

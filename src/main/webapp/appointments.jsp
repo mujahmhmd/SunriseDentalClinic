@@ -85,13 +85,57 @@
     <jsp:param name="confirmHref" value="#" />
   </jsp:include>
 
-  <jsp:include page="components/confirm-modal.jsp">
-    <jsp:param name="id" value="reopenAppointmentModal" />
-    <jsp:param name="title" value="Reopen this appointment?" />
-    <jsp:param name="message" value="It goes back to Scheduled. Any billed services and the total charged will be cleared - you'll need to confirm payment again if you re-complete it." />
-    <jsp:param name="confirmText" value="Reopen" />
-    <jsp:param name="confirmHref" value="#" />
-  </jsp:include>
+  <!--
+    Reopen popup. Not the generic confirm-modal.jsp since reopening a
+    billed appointment needs a reason on record (radio picks from a fixed
+    list to avoid typing; "Other" reveals a small text box), not just a
+    yes/no prompt.
+  -->
+  <div id="reopenModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-clinic-900/40 backdrop-blur-sm px-4">
+    <div class="reopen-modal-card bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 transition-all duration-200 scale-95 opacity-0">
+      <h3 class="font-display text-lg text-clinic-900 mb-1">Reopen this appointment?</h3>
+      <p class="text-sm text-clinic-700/70 mb-4">It goes back to Scheduled. Any billed services and the total charged will be cleared — you'll need to confirm payment again if you re-complete it.</p>
+
+      <form id="reopenForm">
+        <input type="hidden" id="reopenAppointmentId">
+
+        <p class="text-sm font-medium text-clinic-900 mb-2">Reason</p>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2.5 text-sm text-clinic-900 cursor-pointer">
+            <input type="radio" name="reopenReason" value="Marked complete/cancelled by mistake" class="text-clinic-800 focus:ring-clinic-600">
+            Marked complete/cancelled by mistake
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-clinic-900 cursor-pointer">
+            <input type="radio" name="reopenReason" value="Wrong service(s) or amount billed" class="text-clinic-800 focus:ring-clinic-600">
+            Wrong service(s) or amount billed
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-clinic-900 cursor-pointer">
+            <input type="radio" name="reopenReason" value="Payment wasn't actually completed" class="text-clinic-800 focus:ring-clinic-600">
+            Payment wasn't actually completed
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-clinic-900 cursor-pointer">
+            <input type="radio" name="reopenReason" value="Patient requested to reschedule" class="text-clinic-800 focus:ring-clinic-600">
+            Patient requested to reschedule
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-clinic-900 cursor-pointer">
+            <input type="radio" name="reopenReason" value="Other" id="reopenReasonOther" class="text-clinic-800 focus:ring-clinic-600">
+            Other
+          </label>
+        </div>
+
+        <input type="text" id="reopenOtherText" placeholder="Briefly describe why" maxlength="255"
+               class="hidden w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition mt-2">
+        <p id="reopenReasonError" class="hidden text-xs text-red-600 mt-1.5"></p>
+
+        <div class="flex gap-2.5 mt-5">
+          <button type="button" id="reopenCancelBtn"
+                  class="flex-1 rounded-xl py-2.5 text-sm font-medium text-clinic-700 bg-clinic-50 hover:bg-clinic-100 transition-colors">Cancel</button>
+          <button type="submit"
+                  class="flex-1 rounded-xl py-2.5 text-sm font-medium text-white bg-coral-500 hover:bg-coral-400 transition-colors">Reopen</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!--
     Complete & Bill popup. Not the generic confirm-modal.jsp since this needs
@@ -198,15 +242,7 @@
 
         var reopen = e.target.closest('.reopen-appointment');
         if (reopen) {
-          document.querySelector('#reopenAppointmentModal button.bg-coral-500').onclick = function () {
-            fetch('reopenAppointment?id=' + reopen.dataset.id, { method: 'POST' })
-              .then(function () {
-                loadAppointments(searchInput.value, currentPage, false);
-                showToast('Appointment reopened', 'success');
-              });
-            closeConfirmModal('reopenAppointmentModal');
-          };
-          openConfirmModal('reopenAppointmentModal');
+          showReopenModal(reopen.dataset.id);
         }
       });
 
@@ -215,6 +251,74 @@
         var state = e.state || { q: '', page: 1 };
         searchInput.value = state.q;
         loadAppointments(state.q, state.page, false);
+      });
+
+      // Reopen popup: a reason picker, not a plain yes/no confirm — see the
+      // comment above #reopenModal for why.
+      var reopenModal = document.getElementById('reopenModal');
+      var reopenModalCard = reopenModal.querySelector('.reopen-modal-card');
+      var reopenForm = document.getElementById('reopenForm');
+      var reopenAppointmentIdInput = document.getElementById('reopenAppointmentId');
+      var reopenOtherText = document.getElementById('reopenOtherText');
+      var reopenReasonError = document.getElementById('reopenReasonError');
+
+      window.showReopenModal = function (id) {
+        reopenAppointmentIdInput.value = id;
+        reopenForm.reset();
+        reopenOtherText.classList.add('hidden');
+        reopenReasonError.classList.add('hidden');
+        reopenModal.classList.remove('hidden');
+        reopenModal.classList.add('flex');
+        requestAnimationFrame(function () {
+          reopenModalCard.classList.remove('scale-95', 'opacity-0');
+        });
+      };
+
+      function hideReopenModal() {
+        reopenModalCard.classList.add('scale-95', 'opacity-0');
+        setTimeout(function () {
+          reopenModal.classList.add('hidden');
+          reopenModal.classList.remove('flex');
+        }, 150);
+      }
+
+      // "Other" reveals a small text box instead of leaving a radio with no
+      // detail behind it — every other reason is canned, no typing needed.
+      reopenForm.addEventListener('change', function (e) {
+        if (e.target.name === 'reopenReason') {
+          reopenOtherText.classList.toggle('hidden', e.target.value !== 'Other');
+        }
+      });
+
+      document.getElementById('reopenCancelBtn').addEventListener('click', hideReopenModal);
+      reopenModal.addEventListener('click', function (e) { if (e.target === reopenModal) hideReopenModal(); });
+
+      reopenForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var checked = reopenForm.querySelector('input[name="reopenReason"]:checked');
+        if (!checked) {
+          reopenReasonError.textContent = 'Select a reason.';
+          reopenReasonError.classList.remove('hidden');
+          return;
+        }
+        var reason = checked.value;
+        if (reason === 'Other') {
+          reason = reopenOtherText.value.trim();
+          if (!reason) {
+            reopenReasonError.textContent = 'Describe the reason.';
+            reopenReasonError.classList.remove('hidden');
+            reopenOtherText.focus();
+            return;
+          }
+        }
+        reopenReasonError.classList.add('hidden');
+
+        fetch('reopenAppointment?id=' + reopenAppointmentIdInput.value + '&reason=' + encodeURIComponent(reason), { method: 'POST' })
+          .then(function () {
+            hideReopenModal();
+            loadAppointments(searchInput.value, currentPage, false);
+            showToast('Appointment reopened', 'success');
+          });
       });
 
       initAppointmentPayment({
