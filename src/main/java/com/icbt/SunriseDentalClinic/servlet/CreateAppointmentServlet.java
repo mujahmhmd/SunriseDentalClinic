@@ -2,6 +2,8 @@ package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
 import com.icbt.SunriseDentalClinic.util.AppointmentValidator;
+import com.icbt.SunriseDentalClinic.util.BrevoMailer;
+import com.icbt.SunriseDentalClinic.util.EmailTemplates;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +18,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,6 +88,16 @@ public class CreateAppointmentServlet extends HttpServlet {
                     keys.next();
                     appointmentId = keys.getInt(1);
                 }
+            }
+
+            // Best-effort — a booking is still valid even if the confirmation
+            // email fails to send (e.g. Brevo/network hiccup, or the patient
+            // just doesn't have an email on file), so this never blocks the redirect.
+            try {
+                sendConfirmationEmail(conn, appointmentId, Integer.parseInt(patientId.trim()),
+                        Integer.parseInt(doctorId.trim()), appointmentDate.trim(), appointmentTime.trim(), reasonForVisit);
+            } catch (Exception e) {
+                log("Failed to send appointment confirmation email for appointment " + appointmentId, e);
             }
 
             response.sendRedirect("appointmentReceipt?id=" + appointmentId + "&justBooked=1");
@@ -183,6 +198,43 @@ public class CreateAppointmentServlet extends HttpServlet {
                 return rs.next();
             }
         }
+    }
+
+    /** No-op if the patient has no email on file — see the class-level comment on the caller. */
+    private void sendConfirmationEmail(Connection conn, int appointmentId, int patientId, int doctorId,
+                                        String appointmentDate, String appointmentTime, String reasonForVisit)
+            throws SQLException, IOException, InterruptedException {
+
+        String patientName = null;
+        String patientEmail = null;
+        try (PreparedStatement ps = conn.prepareStatement("SELECT name, email FROM patients WHERE id = ?")) {
+            ps.setInt(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    patientName = rs.getString("name");
+                    patientEmail = rs.getString("email");
+                }
+            }
+        }
+        if (patientEmail == null || patientEmail.trim().isEmpty()) {
+            return;
+        }
+
+        String doctorName = null;
+        try (PreparedStatement ps = conn.prepareStatement("SELECT name FROM doctors WHERE id = ?")) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) doctorName = rs.getString("name");
+            }
+        }
+
+        String formattedDate = LocalDate.parse(appointmentDate).format(DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy"));
+        String formattedTime = LocalTime.parse(appointmentTime).format(DateTimeFormatter.ofPattern("h:mm a"));
+        String reason = reasonForVisit == null || reasonForVisit.trim().isEmpty() ? "General visit" : reasonForVisit.trim();
+
+        String html = EmailTemplates.appointmentConfirmation(patientName,
+                AppointmentValidator.formatAppointmentNumber(appointmentId), doctorName, formattedDate, formattedTime, reason);
+        BrevoMailer.sendAppointmentConfirmationEmail(patientEmail.trim(), patientName, html);
     }
 
     private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String error)

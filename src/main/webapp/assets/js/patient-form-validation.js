@@ -9,6 +9,7 @@
 function initPatientFormValidation(formId) {
   var NIC_PATTERN = /^(\d{9}[VXvx]|\d{12})$/;
   var PHONE_PATTERN = /^0\d{9}$/;
+  var EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
   var MAX_AGE_YEARS = 120;
 
   // custom-select.js/custom-date.js hide the real field and build a visible
@@ -79,6 +80,21 @@ function initPatientFormValidation(formId) {
     return true;
   }
 
+  function validateEmail() {
+    var email = document.getElementById('email').value.trim();
+    if (email === '') {
+      // Optional — not every patient gives one.
+      clearFieldError('email');
+      return true;
+    }
+    if (!EMAIL_PATTERN.test(email)) {
+      showFieldError('email', 'Enter a valid email address (e.g. mujahith.mohamed@gmail.com).');
+      return false;
+    }
+    clearFieldError('email');
+    return true;
+  }
+
   function validateNic() {
     var nic = document.getElementById('nic').value.trim();
     if (nic === '') {
@@ -98,6 +114,7 @@ function initPatientFormValidation(formId) {
     name: validateName,
     dateOfBirth: validateDateOfBirth,
     phone: validatePhone,
+    email: validateEmail,
     nic: validateNic
   };
 
@@ -115,7 +132,7 @@ function initPatientFormValidation(formId) {
   if (!form) return;
 
   form.addEventListener('submit', function (e) {
-    var valid = [validateName(), validateDateOfBirth(), validatePhone(), validateNic()]
+    var valid = [validateName(), validateDateOfBirth(), validatePhone(), validateEmail(), validateNic()]
       .every(function (result) { return result; });
 
     if (!valid) e.preventDefault();

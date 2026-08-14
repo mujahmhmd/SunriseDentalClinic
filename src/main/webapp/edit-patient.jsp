@@ -52,6 +52,7 @@
           String vName = request.getAttribute("name") != null ? (String) request.getAttribute("name") : "";
           String vDob = request.getAttribute("dateOfBirth") != null ? (String) request.getAttribute("dateOfBirth") : "";
           String vPhone = request.getAttribute("phone") != null ? (String) request.getAttribute("phone") : "";
+          String vEmail = request.getAttribute("email") != null ? (String) request.getAttribute("email") : "";
           String vNic = request.getAttribute("nic") != null ? (String) request.getAttribute("nic") : "";
           String vGender = request.getAttribute("gender") != null ? (String) request.getAttribute("gender") : "";
           String vAddress = request.getAttribute("address") != null ? (String) request.getAttribute("address") : "";
@@ -93,6 +94,15 @@
                        class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
                 <p id="phoneError" class="hidden text-xs text-red-600 mt-1.5"></p>
               </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-clinic-900 mb-1.5">Email <span class="text-clinic-700/40 font-normal">(optional)</span></label>
+              <input type="email" id="email" name="email" placeholder="e.g. mujahith.mohamed@gmail.com"
+                     value="<%= vEmail %>"
+                     class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-2.5 text-sm text-clinic-900 placeholder:text-clinic-700/30 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
+              <p id="emailError" class="hidden text-xs text-red-600 mt-1.5"></p>
+              <p class="text-xs text-clinic-700/50 mt-1.5">If given, appointment confirmations and bills are emailed here automatically.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-4">

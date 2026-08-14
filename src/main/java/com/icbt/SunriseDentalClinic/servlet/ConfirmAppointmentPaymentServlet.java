@@ -1,6 +1,9 @@
 package com.icbt.SunriseDentalClinic.servlet;
 
 import com.icbt.SunriseDentalClinic.db.DBConnection;
+import com.icbt.SunriseDentalClinic.util.AppointmentValidator;
+import com.icbt.SunriseDentalClinic.util.BrevoMailer;
+import com.icbt.SunriseDentalClinic.util.EmailTemplates;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +16,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Confirms the payment popup on an appointment: snapshots the doctor's
@@ -34,8 +43,10 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
 
             boolean processingPayment;
             int doctorId;
+            int patientId;
+            java.sql.Date appointmentDate;
             try (PreparedStatement ps = conn.prepareStatement(
-                    "SELECT doctor_id, status FROM appointments WHERE id = ?")) {
+                    "SELECT doctor_id, patient_id, appointment_date, status FROM appointments WHERE id = ?")) {
                 ps.setString(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
@@ -43,6 +54,8 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
                         return;
                     }
                     doctorId = rs.getInt("doctor_id");
+                    patientId = rs.getInt("patient_id");
+                    appointmentDate = rs.getDate("appointment_date");
                     processingPayment = "Processing Payment".equals(rs.getString("status"));
                 }
             }
@@ -65,6 +78,8 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
             }
 
             BigDecimal total = consultationFee;
+            List<Map<String, String>> billedServices = new ArrayList<>();
+            DecimalFormat money = new DecimalFormat("#,##0.00");
             if (serviceIds != null && serviceIds.length > 0) {
                 try (PreparedStatement lookup = conn.prepareStatement("SELECT name, price FROM services WHERE id = ?");
                      PreparedStatement insert = conn.prepareStatement(
@@ -89,6 +104,11 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
                             insert.setBigDecimal(4, price);
                             insert.executeUpdate();
                             total = total.add(price);
+
+                            Map<String, String> billed = new LinkedHashMap<>();
+                            billed.put("name", name);
+                            billed.put("price", money.format(price));
+                            billedServices.add(billed);
                         }
                     }
                 }
@@ -103,10 +123,56 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
                 ps.executeUpdate();
             }
 
+            // Best-effort — the payment/completion is already saved regardless
+            // of whether this email goes out (no email on file, Brevo/network
+            // hiccup, etc.), so a failure here never undoes the above.
+            try {
+                sendBillEmail(conn, Integer.parseInt(id), patientId, doctorId, appointmentDate, money,
+                        consultationFee, billedServices, total);
+            } catch (Exception e) {
+                log("Failed to send bill email for appointment " + id, e);
+            }
+
         } catch (SQLException e) {
             throw new ServletException("Database error while confirming appointment payment", e);
         }
 
         response.sendRedirect("appointmentReceipt?id=" + id + "&justPaid=1");
+    }
+
+    /** No-op if the patient has no email on file. */
+    private void sendBillEmail(Connection conn, int appointmentId, int patientId, int doctorId,
+                                java.sql.Date appointmentDate, DecimalFormat money, BigDecimal consultationFee,
+                                List<Map<String, String>> billedServices, BigDecimal total)
+            throws SQLException, IOException, InterruptedException {
+
+        String patientName = null;
+        String patientEmail = null;
+        try (PreparedStatement ps = conn.prepareStatement("SELECT name, email FROM patients WHERE id = ?")) {
+            ps.setInt(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    patientName = rs.getString("name");
+                    patientEmail = rs.getString("email");
+                }
+            }
+        }
+        if (patientEmail == null || patientEmail.trim().isEmpty()) {
+            return;
+        }
+
+        String doctorName = null;
+        try (PreparedStatement ps = conn.prepareStatement("SELECT name FROM doctors WHERE id = ?")) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) doctorName = rs.getString("name");
+            }
+        }
+
+        String formattedDate = appointmentDate.toLocalDate().format(DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy"));
+
+        String html = EmailTemplates.bill(patientName, AppointmentValidator.formatAppointmentNumber(appointmentId),
+                doctorName, formattedDate, money.format(consultationFee), billedServices, money.format(total));
+        BrevoMailer.sendBillEmail(patientEmail.trim(), patientName, html);
     }
 }

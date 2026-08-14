@@ -137,6 +137,13 @@ CREATE TABLE IF NOT EXISTS patients (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Optional — not every patient has (or wants to give) an email. When it's
+-- set, booking/billing emails go out automatically (CreateAppointmentServlet,
+-- ConfirmAppointmentPaymentServlet); when it's NULL, those steps just skip
+-- sending, no error. Not UNIQUE (unlike users.email): a shared household
+-- email for more than one patient, e.g. a parent and child, is normal here.
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS email VARCHAR(150) NULL AFTER phone;
+
 -- Books an existing patient in with an existing doctor at a date/time.
 -- Treatment isn't chosen here — the doctor decides what was actually done
 -- during the visit, so services get attached separately once an appointment

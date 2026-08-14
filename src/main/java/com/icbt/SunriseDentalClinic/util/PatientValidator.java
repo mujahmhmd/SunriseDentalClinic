@@ -19,6 +19,9 @@ public final class PatientValidator {
     // Sri Lankan local number: 10 digits starting with 0 (e.g. 0712345678).
     private static final Pattern PHONE_PATTERN = Pattern.compile("^0\\d{9}$");
 
+    // Same standard-shape check used for staff/user accounts.
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
     private static final int MAX_AGE_YEARS = 120;
 
     // Matches the code printed on a patient's ID card (formatPatientId below),
@@ -51,7 +54,7 @@ public final class PatientValidator {
      * @param dateOfBirth "yyyy-MM-dd" (the format an &lt;input type="date"&gt; submits)
      * @return the first validation error found, or null if everything's valid
      */
-    public static String validate(String name, String dateOfBirth, String phone, String nic, String gender) {
+    public static String validate(String name, String dateOfBirth, String phone, String email, String nic, String gender) {
 
         if (name == null || name.trim().length() < 3) {
             return "Full name must be at least 3 characters.";
@@ -76,6 +79,11 @@ public final class PatientValidator {
 
         if (phone == null || !PHONE_PATTERN.matcher(StaffValidator.normalizePhone(phone)).matches()) {
             return "Enter a valid 10-digit number starting with 0 (e.g. 0712345678).";
+        }
+
+        // Optional — only validated if the patient actually gave one.
+        if (email != null && !email.trim().isEmpty() && !EMAIL_PATTERN.matcher(email.trim()).matches()) {
+            return "Enter a valid email address (e.g. mujahith.mohamed@gmail.com).";
         }
 
         // NIC is optional (children don't have one), but if given, it must be valid.
