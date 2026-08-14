@@ -72,7 +72,7 @@ public class LoginServlet extends HttpServlet {
                     cookie.setMaxAge(validDays * 24 * 3600);
                     response.addCookie(cookie);
 
-                    response.sendRedirect("dashboard.jsp");
+                    response.sendRedirect("dashboard");
                     return;
                 }
             }

@@ -6,7 +6,7 @@
   // tab), fall back to the dashboard.
   if (session.getAttribute("username") != null) {
     String previousPage = request.getHeader("Referer");
-    response.sendRedirect(previousPage != null ? previousPage : "dashboard.jsp");
+    response.sendRedirect(previousPage != null ? previousPage : "dashboard");
     return;
   }
 %>
