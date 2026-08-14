@@ -13,6 +13,7 @@ function initStaffFormValidation(formId, options) {
 
   var NIC_PATTERN = /^(\d{9}[VXvx]|\d{12})$/;
   var PHONE_PATTERN = /^0\d{9}$/;
+  var EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
   // Lowercase letters/numbers, dot/underscore/hyphen allowed in the middle only, 3-16 chars total.
   var USERNAME_PATTERN = /^[a-z0-9][a-z0-9._-]{1,14}[a-z0-9]$/;
   var PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
@@ -70,6 +71,16 @@ function initStaffFormValidation(formId, options) {
     return true;
   }
 
+  function validateEmail() {
+    var email = document.getElementById('email').value.trim();
+    if (!EMAIL_PATTERN.test(email)) {
+      showFieldError('email', 'Enter a valid email address (e.g. mujahith.mohamed@gmail.com).');
+      return false;
+    }
+    clearFieldError('email');
+    return true;
+  }
+
   function validateUsername() {
     var username = document.getElementById('username').value.trim();
     if (!USERNAME_PATTERN.test(username)) {
@@ -111,6 +122,7 @@ function initStaffFormValidation(formId, options) {
     name: validateName,
     nic: validateNic,
     phone: validatePhone,
+    email: validateEmail,
     username: validateUsername,
     password: validatePassword
   };
@@ -124,7 +136,7 @@ function initStaffFormValidation(formId, options) {
   if (!form) return;
 
   form.addEventListener('submit', function (e) {
-    var valid = [validateName(), validateNic(), validatePhone(), validateUsername(), validatePassword()]
+    var valid = [validateName(), validateNic(), validatePhone(), validateEmail(), validateUsername(), validatePassword()]
       .every(function (result) { return result; });
 
     if (!valid) e.preventDefault();

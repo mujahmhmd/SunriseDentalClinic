@@ -19,6 +19,10 @@ public final class StaffValidator {
     // Lowercase letters/numbers; dot, underscore, hyphen allowed only between them; 3-16 chars total.
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9._-]{1,14}[a-z0-9]$");
 
+    // Standard-shape email check (not a full RFC 5322 parser) — good enough
+    // to catch typos without rejecting real addresses.
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
     // At least one lowercase, one uppercase, one digit, one special character, 6+ chars.
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{6,}$");
@@ -40,7 +44,7 @@ public final class StaffValidator {
      *                          means "keep the current one"
      * @return the first validation error found, or null if everything's valid
      */
-    public static String validate(String name, String nic, String phone, String username,
+    public static String validate(String name, String nic, String phone, String email, String username,
                                    String password, boolean passwordRequired) {
 
         if (name == null || name.trim().length() < 3) {
@@ -51,6 +55,9 @@ public final class StaffValidator {
         }
         if (phone == null || !PHONE_PATTERN.matcher(normalizePhone(phone)).matches()) {
             return "Enter a valid 10-digit number starting with 0 (e.g. 0712345678).";
+        }
+        if (email == null || !EMAIL_PATTERN.matcher(email.trim()).matches()) {
+            return "Enter a valid email address (e.g. mujahith.mohamed@gmail.com).";
         }
         if (username == null || !USERNAME_PATTERN.matcher(username.trim()).matches()) {
             return "Username must be 3-16 characters: lowercase letters, numbers, dots, underscores or hyphens only (e.g. jane.perera).";

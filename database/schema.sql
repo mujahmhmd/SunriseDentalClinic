@@ -23,6 +23,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS nic VARCHAR(20) NULL AFTER name;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address VARCHAR(255) NULL AFTER nic;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20) NULL AFTER address;
 
+-- Email is required going forward on the Create/Edit Staff forms (enforced
+-- in StaffValidator, not here) — kept nullable at the DB level so this
+-- ALTER doesn't fail on any staff rows that existed before it was added.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(150) NULL UNIQUE AFTER phone;
+
 -- "Remember me" persistent login tokens. A row here lets a browser skip
 -- re-entering credentials (and survive a server redeploy, unlike the plain
 -- HttpSession) until expires_at. Only the SHA-256 hash of the token is
@@ -216,5 +221,9 @@ INSERT IGNORE INTO services (name, price, description) VALUES
 -- IGNORE makes this safe to re-run: rows are skipped (not duplicated or
 -- errored on) if a username already exists from a previous run.
 -- admin  / admin123
-INSERT IGNORE INTO users (username, password, name, nic, role, status) VALUES
-    ('admin',  '$2a$10$9etuIN4Vp13SdV./vezS8uPxLo1kIuxZGFazW/c1wNviXseoYkVLm', 'Clinic Admin', '200007703960', 'admin', 'active');
+INSERT IGNORE INTO users (username, password, name, nic, email, role, status) VALUES
+    ('admin',  '$2a$10$9etuIN4Vp13SdV./vezS8uPxLo1kIuxZGFazW/c1wNviXseoYkVLm', 'Clinic Admin', '200007703960', 'mujahithmohamed59@gmail.com', 'admin', 'active');
+
+-- Backfills the admin's email on a DB where this row already existed before
+-- the email column was added (INSERT IGNORE above would skip it in that case).
+UPDATE users SET email = 'mujahithmohamed59@gmail.com' WHERE username = 'admin' AND email IS NULL;

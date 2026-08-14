@@ -24,7 +24,7 @@ public class EditStaffServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String id = request.getParameter("id");
-        String sql = "SELECT id, name, nic, address, phone, username FROM users WHERE id = ? AND role = 'staff'";
+        String sql = "SELECT id, name, nic, address, phone, email, username FROM users WHERE id = ? AND role = 'staff'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -41,6 +41,7 @@ public class EditStaffServlet extends HttpServlet {
                 request.setAttribute("nic", rs.getString("nic"));
                 request.setAttribute("address", rs.getString("address"));
                 request.setAttribute("phone", rs.getString("phone"));
+                request.setAttribute("email", rs.getString("email"));
                 request.setAttribute("username", rs.getString("username"));
             }
 
@@ -60,28 +61,41 @@ public class EditStaffServlet extends HttpServlet {
         String nic = request.getParameter("nic");
         String address = request.getParameter("address");
         String phone = request.getParameter("phone");
+        String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password = request.getParameter("password"); // optional: blank keeps the current password
 
-        String validationError = StaffValidator.validate(name, nic, phone, username, password, false);
+        String validationError = StaffValidator.validate(name, nic, phone, email, username, password, false);
         if (validationError != null) {
-            forwardWithError(request, response, validationError, id, name, nic, address, phone, username);
+            forwardWithError(request, response, validationError, id, name, nic, address, phone, email, username);
             return;
         }
 
-        String checkSql = "SELECT 1 FROM users WHERE username = ? AND id <> ?";
-        String updateSqlBase = "UPDATE users SET name = ?, nic = ?, address = ?, phone = ?, username = ?";
+        String checkUsernameSql = "SELECT 1 FROM users WHERE username = ? AND id <> ?";
+        String checkEmailSql = "SELECT 1 FROM users WHERE email = ? AND id <> ?";
+        String updateSqlBase = "UPDATE users SET name = ?, nic = ?, address = ?, phone = ?, email = ?, username = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
 
             // Excludes this staff member's own id so re-saving their unchanged
-            // username isn't mistaken for a clash.
-            try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+            // username/email isn't mistaken for a clash.
+            try (PreparedStatement ps = conn.prepareStatement(checkUsernameSql)) {
                 ps.setString(1, username.trim());
                 ps.setString(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        forwardWithError(request, response, "That username is already taken.", id, name, nic, address, phone, username);
+                        forwardWithError(request, response, "That username is already taken.", id, name, nic, address, phone, email, username);
+                        return;
+                    }
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(checkEmailSql)) {
+                ps.setString(1, email.trim());
+                ps.setString(2, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "That email is already in use.", id, name, nic, address, phone, email, username);
                         return;
                     }
                 }
@@ -95,12 +109,13 @@ public class EditStaffServlet extends HttpServlet {
                 ps.setString(2, nic.trim());
                 ps.setString(3, address == null ? null : address.trim());
                 ps.setString(4, StaffValidator.normalizePhone(phone));
-                ps.setString(5, username.trim());
+                ps.setString(5, email.trim());
+                ps.setString(6, username.trim());
                 if (changePassword) {
-                    ps.setString(6, BCrypt.hashpw(password, BCrypt.gensalt()));
-                    ps.setString(7, id);
+                    ps.setString(7, BCrypt.hashpw(password, BCrypt.gensalt()));
+                    ps.setString(8, id);
                 } else {
-                    ps.setString(6, id);
+                    ps.setString(7, id);
                 }
                 ps.executeUpdate();
             }
@@ -117,7 +132,7 @@ public class EditStaffServlet extends HttpServlet {
     }
 
     private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String error,
-                                   String id, String name, String nic, String address, String phone, String username)
+                                   String id, String name, String nic, String address, String phone, String email, String username)
             throws ServletException, IOException {
         request.setAttribute("error", error);
         request.setAttribute("id", id);
@@ -125,6 +140,7 @@ public class EditStaffServlet extends HttpServlet {
         request.setAttribute("nic", nic);
         request.setAttribute("address", address);
         request.setAttribute("phone", phone);
+        request.setAttribute("email", email);
         request.setAttribute("username", username);
         request.getRequestDispatcher("edit-staff.jsp").forward(request, response);
     }

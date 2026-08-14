@@ -27,28 +27,40 @@ public class CreateStaffServlet extends HttpServlet {
         String nic = request.getParameter("nic");
         String address = request.getParameter("address");
         String phone = request.getParameter("phone");
+        String email = request.getParameter("email");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        String validationError = StaffValidator.validate(name, nic, phone, username, password, true);
+        String validationError = StaffValidator.validate(name, nic, phone, email, username, password, true);
         if (validationError != null) {
-            forwardWithError(request, response, validationError, name, nic, address, phone, username);
+            forwardWithError(request, response, validationError, name, nic, address, phone, email, username);
             return;
         }
 
-        String checkSql = "SELECT 1 FROM users WHERE username = ?";
-        String insertSql = "INSERT INTO users (username, password, name, nic, address, phone, role, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, 'staff', 'active')";
+        String checkUsernameSql = "SELECT 1 FROM users WHERE username = ?";
+        String checkEmailSql = "SELECT 1 FROM users WHERE email = ?";
+        String insertSql = "INSERT INTO users (username, password, name, nic, address, phone, email, role, status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, 'staff', 'active')";
 
         try (Connection conn = DBConnection.getConnection()) {
 
             // Checked explicitly (rather than relying on the UNIQUE constraint
             // failing) so we can show a friendly message instead of a raw SQL error.
-            try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+            try (PreparedStatement ps = conn.prepareStatement(checkUsernameSql)) {
                 ps.setString(1, username.trim());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        forwardWithError(request, response, "That username is already taken.", name, nic, address, phone, username);
+                        forwardWithError(request, response, "That username is already taken.", name, nic, address, phone, email, username);
+                        return;
+                    }
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(checkEmailSql)) {
+                ps.setString(1, email.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "That email is already in use.", name, nic, address, phone, email, username);
                         return;
                     }
                 }
@@ -63,6 +75,7 @@ public class CreateStaffServlet extends HttpServlet {
                 ps.setString(4, nic.trim());
                 ps.setString(5, address == null ? null : address.trim());
                 ps.setString(6, StaffValidator.normalizePhone(phone));
+                ps.setString(7, email.trim());
                 ps.executeUpdate();
             }
 
@@ -74,13 +87,14 @@ public class CreateStaffServlet extends HttpServlet {
     }
 
     private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String error,
-                                   String name, String nic, String address, String phone, String username)
+                                   String name, String nic, String address, String phone, String email, String username)
             throws ServletException, IOException {
         request.setAttribute("error", error);
         request.setAttribute("name", name);
         request.setAttribute("nic", nic);
         request.setAttribute("address", address);
         request.setAttribute("phone", phone);
+        request.setAttribute("email", email);
         request.setAttribute("username", username);
         request.getRequestDispatcher("create-staff.jsp").forward(request, response);
     }
