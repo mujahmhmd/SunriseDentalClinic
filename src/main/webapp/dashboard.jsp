@@ -175,7 +175,10 @@
 
   <script>
     <% if (request.getParameter("error") != null) { %>
-    showToast('<%= request.getParameter("error") %>', 'error');
+    showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(request.getParameter("error")) %>', 'error');
+    // Drop the ?error=... query string once it's been shown as a toast,
+    // so it doesn't sit there in the address bar.
+    history.replaceState(null, '', 'dashboard');
     <% } %>
   </script>
 

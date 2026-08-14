@@ -242,7 +242,7 @@
     initDoctorFormValidation('createDoctorForm');
 
     <% if (request.getAttribute("error") != null) { %>
-    showToast('<%= request.getAttribute("error") %>', 'error');
+    showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(request.getAttribute("error")) %>', 'error');
     <% } %>
   </script>
 

@@ -44,11 +44,21 @@ public class RememberMeFilter implements Filter {
     // components/sidebar.jsp and components/doctor-table.jsp. Doctors itself
     // is staff-visible (they book appointments against it) — only deleting a
     // doctor record is admin-only.
+    //
+    // Includes both the servlet route (e.g. "/staffs") AND the .jsp file it
+    // forwards to (e.g. "/staffs.jsp") — Tomcat serves any .jsp under
+    // webapp/ directly by URL regardless of @WebServlet mappings, so
+    // blocking only the route left the raw page (and its AJAX table
+    // fragment) reachable straight from the browser, just without data.
     private static final Set<String> ADMIN_ONLY_PATHS = new HashSet<>(Arrays.asList(
-            "/staffs", "/createStaff", "/editStaff", "/deleteStaff", "/toggleStaffStatus",
+            "/staffs", "/staffs.jsp", "/createStaff", "/create-staff.jsp",
+            "/editStaff", "/edit-staff.jsp", "/deleteStaff", "/toggleStaffStatus",
+            "/components/staff-table.jsp",
             "/deleteDoctor",
-            "/services", "/createService", "/editService", "/deleteService", "/toggleServiceStatus",
-            "/billing"
+            "/services", "/services.jsp", "/createService", "/create-service.jsp",
+            "/editService", "/edit-service.jsp", "/deleteService", "/toggleServiceStatus",
+            "/components/service-table.jsp",
+            "/billing", "/billing.jsp", "/components/billing-table.jsp"
     ));
 
     @Override

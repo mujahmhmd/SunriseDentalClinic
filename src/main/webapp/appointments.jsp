@@ -343,7 +343,7 @@
     }
 
     <% if (request.getParameter("success") != null) { %>
-    showToast('<%= request.getParameter("success") %>', 'success');
+    showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(request.getParameter("success")) %>', 'success');
     history.replaceState(null, '', 'appointments?q=<%= java.net.URLEncoder.encode(searchQuery, "UTF-8") %>&page=<%= initialPage %>');
     <% } %>
   </script>

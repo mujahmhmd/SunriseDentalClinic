@@ -139,7 +139,7 @@
       });
 
       <% if (successMessage != null) { %>
-      showToast('<%= successMessage %>', 'success');
+      showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(successMessage) %>', 'success');
       // Drops ?success=... from the address bar so refreshing doesn't replay the toast.
       history.replaceState({ q: '<%= searchQuery %>', page: <%= initialPage %> }, '', 'staffs?q=<%= java.net.URLEncoder.encode(searchQuery, "UTF-8") %>&page=<%= initialPage %>');
       <% } %>
