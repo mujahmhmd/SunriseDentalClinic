@@ -10,6 +10,10 @@
   int activeDoctors = request.getAttribute("activeDoctors") != null ? (Integer) request.getAttribute("activeDoctors") : 0;
   String revenueThisMonth = request.getAttribute("revenueThisMonth") != null ? (String) request.getAttribute("revenueThisMonth") : "0.00";
   List<Map<String, String>> todaysSchedule = (List<Map<String, String>>) request.getAttribute("todaysSchedule");
+  // Doctors/Services/Billing pages are admin-only (RememberMeFilter enforces
+  // it server-side) — this just keeps the dashboard from showing revenue or
+  // linking to pages Staff would immediately get bounced away from.
+  boolean isAdmin = "admin".equals(session.getAttribute("role"));
 %>
 <!DOCTYPE html>
 <html lang="en" class="h-full overflow-hidden">
@@ -51,7 +55,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 <%= isAdmin ? "lg:grid-cols-4" : "lg:grid-cols-3" %> gap-4 mb-6">
         <a href="appointments" class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-5 hover:border-clinic-200 hover:shadow-md transition-all">
           <div class="w-9 h-9 rounded-lg bg-coral-500/10 text-coral-500 flex items-center justify-center mb-3">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -85,6 +89,7 @@
           <p class="font-display text-2xl text-clinic-900"><%= activeDoctors %></p>
         </a>
 
+        <% if (isAdmin) { %>
         <a href="billing" class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-5 hover:border-clinic-200 hover:shadow-md transition-all">
           <div class="w-9 h-9 rounded-lg bg-clinic-600/10 text-clinic-700 flex items-center justify-center mb-3">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -94,6 +99,7 @@
           <p class="text-xs text-clinic-700/50 mb-0.5">Revenue This Month</p>
           <p class="font-display text-2xl text-clinic-900">Rs. <%= revenueThisMonth %></p>
         </a>
+        <% } %>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -151,17 +157,27 @@
               </span>
               Add Doctor
             </a>
+            <% if (isAdmin) { %>
             <a href="createService" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-clinic-900 bg-clinic-50/70 hover:bg-clinic-50 transition-colors">
               <span class="w-7 h-7 rounded-lg bg-clinic-800 text-white flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               </span>
               Add Service
             </a>
+            <% } %>
           </div>
         </div>
       </div>
     </main>
   </div>
+
+  <jsp:include page="components/toast.jsp" />
+
+  <script>
+    <% if (request.getParameter("error") != null) { %>
+    showToast('<%= request.getParameter("error") %>', 'error');
+    <% } %>
+  </script>
 
 </body>
 </html>
