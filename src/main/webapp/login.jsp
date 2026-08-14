@@ -192,6 +192,10 @@
     <% if (request.getAttribute("error") != null) { %>
     showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(request.getAttribute("error")) %>', 'error');
     <% } %>
+    <% if (request.getParameter("success") != null) { %>
+    showToast('<%= com.icbt.SunriseDentalClinic.util.JsUtil.escape(request.getParameter("success")) %>', 'success');
+    history.replaceState(null, '', 'login.jsp');
+    <% } %>
   </script>
 
 </body>

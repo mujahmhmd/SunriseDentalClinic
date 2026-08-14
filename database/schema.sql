@@ -41,6 +41,32 @@ CREATE TABLE IF NOT EXISTS remember_tokens (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Forgot-password OTPs, emailed via Brevo. Only the SHA-256 hash is stored
+-- (same reasoning as remember_tokens above); each code is valid for 3
+-- minutes (OtpUtil.OTP_VALID_MINUTES) and single-use (`used`).
+CREATE TABLE IF NOT EXISTS password_reset_otps (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    otp_hash CHAR(64) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Auto-deletes expired OTP rows every minute instead of just leaving them
+-- inert once expires_at passes. Requires the MySQL/MariaDB event scheduler
+-- to be on; the SET GLOBAL below turns it on for the running server (XAMPP
+-- ships it off by default). OtpUtil.issue() also deletes this user's own
+-- expired/used rows as a fallback, in case the scheduler ever gets turned
+-- back off.
+SET GLOBAL event_scheduler = ON;
+
+CREATE EVENT IF NOT EXISTS cleanup_expired_password_reset_otps
+ON SCHEDULE EVERY 1 MINUTE
+DO
+    DELETE FROM password_reset_otps WHERE expires_at < NOW();
+
 -- Doctors are a separate concept from users: they never log into the portal,
 -- so there's no username/password/role here — just clinic records staff
 -- manage on their behalf.

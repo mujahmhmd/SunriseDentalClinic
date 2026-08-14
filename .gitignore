@@ -2,6 +2,9 @@ target/
 *.class
 *.log
 
+# Secrets -- never commit the real Brevo API key. See brevo.properties.example.
+src/main/resources/brevo.properties
+
 # IDE
 .idea/
 *.iml
