@@ -199,7 +199,7 @@
                     <% for (int h = 0; h < DoctorValidator.HOURS.length; h++) {
                          String[] hour = DoctorValidator.HOURS[h];
                          boolean hourChecked = hour[0].equals(startVal);
-                         // The last hour can never be a start — there'd be no later hour to end at.
+                         // The last hour can never be a start - there'd be no later hour to end at.
                          boolean startEnabled = h < DoctorValidator.HOURS.length - 1;
                     %>
                     <label class="relative inline-flex cursor-pointer">

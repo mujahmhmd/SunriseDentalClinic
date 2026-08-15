@@ -26,10 +26,10 @@ import java.util.Locale;
  * grey them out instead of letting a clash be discovered only at submit:
  *   - "booked": this doctor already has an appointment at that time
  *   - "patientConflict": this patient already has an appointment (with any
- *     doctor) at that time — the same person can't be in two places at once
+ *     doctor) at that time - the same person can't be in two places at once
  *   - "visitingStart"/"visitingEnd": the doctor's scheduled hours for that
  *     date's weekday (from doctor_schedules), both null if they don't visit
- *     that day at all — slots outside this range are unbookable regardless
+ *     that day at all - slots outside this range are unbookable regardless
  *     of the booked/patientConflict lists
  */
 @WebServlet("/appointmentSlots")
@@ -97,7 +97,7 @@ public class AppointmentSlotsServlet extends HttpServlet {
                         }
                     }
                 } catch (DateTimeParseException ignored) {
-                    // Malformed date param — leave visitingStart/visitingEnd null,
+                    // Malformed date param - leave visitingStart/visitingEnd null,
                     // same as "doctor doesn't work that day".
                 }
 

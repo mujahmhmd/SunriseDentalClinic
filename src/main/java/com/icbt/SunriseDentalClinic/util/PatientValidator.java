@@ -13,7 +13,7 @@ public final class PatientValidator {
 
     // Sri Lankan NIC: old format is 9 digits + V/X (e.g. 912345678V),
     // new format is 12 digits with no letter (e.g. 200012345678). Optional
-    // here — children don't have one issued yet.
+    // here - children don't have one issued yet.
     private static final Pattern NIC_PATTERN = Pattern.compile("^(\\d{9}[VXvx]|\\d{12})$");
 
     // Sri Lankan local number: 10 digits starting with 0 (e.g. 0712345678).
@@ -25,7 +25,7 @@ public final class PatientValidator {
     private static final int MAX_AGE_YEARS = 120;
 
     // Matches the code printed on a patient's ID card (formatPatientId below),
-    // typed or scanned back in when searching for them — case-insensitive
+    // typed or scanned back in when searching for them - case-insensitive
     // and tolerant of the zero-padding since staff will be reading it off a
     // printed card, not copy-pasting it.
     private static final Pattern PATIENT_CODE_PATTERN = Pattern.compile("^SDCP0*([1-9][0-9]*)$", Pattern.CASE_INSENSITIVE);
@@ -33,7 +33,7 @@ public final class PatientValidator {
     private PatientValidator() {
     }
 
-    /** Patient-facing ID card reference — the row id, zero-padded and prefixed. */
+    /** Patient-facing ID card reference - the row id, zero-padded and prefixed. */
     public static String formatPatientId(int id) {
         return String.format("SDCP%06d", id);
     }
@@ -81,7 +81,7 @@ public final class PatientValidator {
             return "Enter a valid 10-digit number starting with 0 (e.g. 0712345678).";
         }
 
-        // Optional — only validated if the patient actually gave one.
+        // Optional - only validated if the patient actually gave one.
         if (email != null && !email.trim().isEmpty() && !EMAIL_PATTERN.matcher(email.trim()).matches()) {
             return "Enter a valid email address (e.g. mujahith.mohamed@gmail.com).";
         }

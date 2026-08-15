@@ -1,6 +1,6 @@
 // Client-side validation for the Settings page's two forms: Account
 // (username) and Change Password. Server-side, UpdateUsernameServlet /
-// UpdateAccountPasswordServlet re-check the same rules — this is UX only,
+// UpdateAccountPasswordServlet re-check the same rules - this is UX only,
 // never the source of truth.
 //
 // The password form has one extra wrinkle: the New/Confirm fields start
@@ -81,7 +81,7 @@ function initSettingsValidation() {
   var currentPasswordConfirmed = false;
   var verifyDebounceTimer = null;
   // Network responses aren't guaranteed to arrive in the order they were
-  // sent — without this, a slow response to an earlier (wrong) attempt can
+  // sent - without this, a slow response to an earlier (wrong) attempt can
   // land after a faster response to a later (correct) one and clobber the
   // UI back to "incorrect". Each check gets a ticket; only the response
   // matching the *latest* ticket is allowed to update the UI.
@@ -108,7 +108,7 @@ function initSettingsValidation() {
     clearFieldError('currentPassword');
   }
 
-  /** @param silent don't show the "incorrect" error yet — used while still typing */
+  /** @param silent don't show the "incorrect" error yet - used while still typing */
   function verifyCurrentPassword(silent) {
     clearTimeout(verifyDebounceTimer);
     var currentPassword = currentPasswordInput.value;
@@ -138,7 +138,7 @@ function initSettingsValidation() {
       .catch(function () {
         if (requestId !== verifyRequestId) return;
         lockNewPasswordFields();
-        if (!silent) showFieldError('currentPassword', "Couldn't verify your password — try again.");
+        if (!silent) showFieldError('currentPassword', "Couldn't verify your password - try again.");
       });
   }
 
@@ -160,7 +160,7 @@ function initSettingsValidation() {
     return true;
   }
 
-  // Re-checks as they type (debounced, silent — no red error mid-keystroke,
+  // Re-checks as they type (debounced, silent - no red error mid-keystroke,
   // same reasoning as the blur-only fields below) so getting it right
   // unlocks the new-password fields without needing to click away first.
   // Blur re-checks immediately (not silent, no debounce wait) so tabbing

@@ -13,12 +13,12 @@ import java.util.Properties;
  * Sends emails (forgot-password OTPs, appointment confirmations, bills)
  * through Brevo's transactional email REST API. Calls the HTTP API directly
  * with the JDK's built-in HttpClient (Java 11+) rather than pulling in a
- * mail/SDK dependency — this project already hand-builds small JSON
+ * mail/SDK dependency - this project already hand-builds small JSON
  * payloads elsewhere (e.g. PatientSearchServlet) instead of adding a
  * library for it.
  *
  * Configuration lives in src/main/resources/brevo.properties, which is
- * gitignored since it holds a live API key — see brevo.properties.example
+ * gitignored since it holds a live API key - see brevo.properties.example
  * for the template.
  */
 public final class BrevoMailer {
@@ -39,12 +39,12 @@ public final class BrevoMailer {
         send(toEmail, toName, "Your Sunrise Dental password reset code", html);
     }
 
-    /** Booking confirmation, sent once an appointment is created — see EmailTemplates. */
+    /** Booking confirmation, sent once an appointment is created - see EmailTemplates. */
     public static void sendAppointmentConfirmationEmail(String toEmail, String toName, String html) throws IOException, InterruptedException {
         send(toEmail, toName, "Your appointment at Sunrise Dental Clinic is confirmed", html);
     }
 
-    /** Bill/receipt, sent once an appointment is marked Completed and paid — see EmailTemplates. */
+    /** Bill/receipt, sent once an appointment is marked Completed and paid - see EmailTemplates. */
     public static void sendBillEmail(String toEmail, String toName, String html) throws IOException, InterruptedException {
         send(toEmail, toName, "Your receipt from Sunrise Dental Clinic", html);
     }
@@ -57,7 +57,7 @@ public final class BrevoMailer {
         String senderName = CONFIG.getProperty("brevo.sender.name", "Sunrise Dental Clinic");
 
         if (apiKey.isEmpty() || senderEmail.isEmpty()) {
-            throw new IOException("Brevo isn't configured — check src/main/resources/brevo.properties.");
+            throw new IOException("Brevo isn't configured - check src/main/resources/brevo.properties.");
         }
 
         String json = "{"

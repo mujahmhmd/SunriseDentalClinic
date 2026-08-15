@@ -47,7 +47,7 @@ function initAppointmentSlots(config) {
       if (notVisiting || isBooked || isConflict) {
         if (input.checked) {
           // The date/doctor/patient changed out from under a slot the user
-          // had already picked — clear it so an unavailable time can't be
+          // had already picked - clear it so an unavailable time can't be
           // silently submitted.
           input.checked = false;
           input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -65,7 +65,7 @@ function initAppointmentSlots(config) {
     var doctorId = doctorInput.value;
     var date = dateInput.value;
     if (!doctorId || !date) {
-      // Nothing to check against yet — leave every slot pickable.
+      // Nothing to check against yet - leave every slot pickable.
       setEveryTag(AVAILABLE_CLASS, false);
       return;
     }
@@ -89,8 +89,8 @@ function initAppointmentSlots(config) {
   dateInput.addEventListener('change', debouncedRefresh);
   if (patientInput) patientInput.addEventListener('change', debouncedRefresh);
 
-  // Doctor/date/patient may already be filled in on load — editing an
-  // existing appointment, or redisplaying after a validation error — so
+  // Doctor/date/patient may already be filled in on load - editing an
+  // existing appointment, or redisplaying after a validation error - so
   // check availability immediately rather than waiting for the next change.
   refresh();
 }

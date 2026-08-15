@@ -1,10 +1,10 @@
 // Client-side validation for the Create Appointment and Edit Appointment
 // forms (identical fields, so shared here like patient-form-validation.js).
-// Server-side, AppointmentValidator re-checks the same rules — this is UX
+// Server-side, AppointmentValidator re-checks the same rules - this is UX
 // only, never the source of truth.
 function initAppointmentFormValidation(formId) {
   // custom-select.js/custom-date.js hide the real field and build a visible
-  // "<id>-trigger" element in its place — that's what needs the red border,
+  // "<id>-trigger" element in its place - that's what needs the red border,
   // since styling the hidden original element wouldn't be seen.
   function fieldDisplayEl(id) {
     return document.getElementById(id + '-trigger') || document.getElementById(id);
@@ -29,8 +29,8 @@ function initAppointmentFormValidation(formId) {
     inputEl.classList.add('border-clinic-100');
   }
 
-  // Patient isn't a native select/date field — it's the search box wired up
-  // by patient-search.js — so its display element is patientQuery, not a
+  // Patient isn't a native select/date field - it's the search box wired up
+  // by patient-search.js - so its display element is patientQuery, not a
   // "-trigger" element.
   function validatePatient() {
     var hidden = document.getElementById('patientId');
@@ -71,7 +71,7 @@ function initAppointmentFormValidation(formId) {
   }
 
   // Time is a group of radio tags (see appointment-slots.js), not a single
-  // element — there's no "-trigger" to target, just the shared error text
+  // element - there's no "-trigger" to target, just the shared error text
   // under the tag row.
   function validateTime() {
     var checked = document.querySelector('input[name="appointmentTime"]:checked');
@@ -95,7 +95,7 @@ function initAppointmentFormValidation(formId) {
     if (!input) return;
     input.addEventListener('blur', fieldValidators[id]);
     // doctorId/appointmentDate are hidden once custom-select.js/custom-date.js
-    // enhance them, so they never get a real blur — but those scripts dispatch
+    // enhance them, so they never get a real blur - but those scripts dispatch
     // 'change' when a value is picked, which this also catches. patientId
     // (hidden, set by patient-search.js) only ever fires 'change'.
     input.addEventListener('change', fieldValidators[id]);

@@ -26,13 +26,13 @@ import java.util.Set;
  *
  * 1. If there's no active session but a valid "remember me" cookie exists,
  *    transparently re-establishes the session (no re-entering credentials)
- *    — this is what makes a login survive a server redeploy, since the
+ *    - this is what makes a login survive a server redeploy, since the
  *    plain HttpSession alone can't.
  * 2. Blocks Staff accounts from admin-only pages/actions (Staffs, Services,
  *    Billing in full; just the delete action on Doctors) even via a direct
  *    URL, not just by hiding the sidebar links/buttons. This has to run
  *    *after* step 1 resolves the role for a remembered-but-not-yet-session-
- *    restored request — doing it in a second @WebFilter would work most of
+ *    restored request - doing it in a second @WebFilter would work most of
  *    the time, but the servlet spec doesn't guarantee ordering between two
  *    annotation-declared filters, so it's kept here instead where the
  *    ordering is guaranteed by being the same method call.
@@ -42,11 +42,11 @@ public class RememberMeFilter implements Filter {
 
     // Keep in sync with the admin-only nav items/buttons in
     // components/sidebar.jsp and components/doctor-table.jsp. Doctors itself
-    // is staff-visible (they book appointments against it) — only deleting a
+    // is staff-visible (they book appointments against it) - only deleting a
     // doctor record is admin-only.
     //
     // Includes both the servlet route (e.g. "/staffs") AND the .jsp file it
-    // forwards to (e.g. "/staffs.jsp") — Tomcat serves any .jsp under
+    // forwards to (e.g. "/staffs.jsp") - Tomcat serves any .jsp under
     // webapp/ directly by URL regardless of @WebServlet mappings, so
     // blocking only the route left the raw page (and its AJAX table
     // fragment) reachable straight from the browser, just without data.

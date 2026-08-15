@@ -1,5 +1,5 @@
 # Copy this file to brevo.properties (same folder) and fill in your real
-# values. brevo.properties is gitignored on purpose — it holds a live API
+# values. brevo.properties is gitignored on purpose - it holds a live API
 # key and must never be committed.
 brevo.api.key=your-brevo-api-key-here
 # Must already be a verified sender in your Brevo account, or sends will fail.

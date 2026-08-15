@@ -61,7 +61,7 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
             }
             if (!processingPayment) {
                 // Stale/duplicate submit (e.g. double-click, or the popup was
-                // cancelled in another tab) — nothing to charge.
+                // cancelled in another tab) - nothing to charge.
                 response.sendRedirect("appointments");
                 return;
             }
@@ -123,7 +123,7 @@ public class ConfirmAppointmentPaymentServlet extends HttpServlet {
                 ps.executeUpdate();
             }
 
-            // Best-effort — the payment/completion is already saved regardless
+            // Best-effort - the payment/completion is already saved regardless
             // of whether this email goes out (no email on file, Brevo/network
             // hiccup, etc.), so a failure here never undoes the above.
             try {

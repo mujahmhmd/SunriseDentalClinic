@@ -96,7 +96,7 @@
                 </button>
               </div>
               <p id="currentPasswordError" class="hidden text-xs text-red-600 mt-1.5"></p>
-              <p id="currentPasswordVerified" class="hidden text-xs text-clinic-600 mt-1.5">✓ Verified — you can set a new password below.</p>
+              <p id="currentPasswordVerified" class="hidden text-xs text-clinic-600 mt-1.5">✓ Verified - you can set a new password below.</p>
             </div>
 
             <div class="mb-4">

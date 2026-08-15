@@ -7,7 +7,7 @@ import java.util.Map;
  * Builds the HTML bodies for the appointment-confirmation and billing
  * emails, styled to read like the printable receipt
  * (appointment-receipt.jsp) so what lands in an inbox matches what's
- * printed at the front desk. Table-based layout with inline styles only —
+ * printed at the front desk. Table-based layout with inline styles only -
  * no Tailwind/external CSS or flexbox, since email clients (Outlook
  * especially) don't reliably support either.
  */

@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Backs out of the payment popup without charging anything — the appointment
+ * Backs out of the payment popup without charging anything - the appointment
  * goes back to Scheduled so it isn't left stuck in Processing Payment.
  */
 @WebServlet("/cancelAppointmentPayment")

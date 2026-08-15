@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @WebServlet("/updateUsername")
 public class UpdateUsernameServlet extends HttpServlet {
 
-    // Same shape as StaffValidator's username rule — kept as its own copy,
+    // Same shape as StaffValidator's username rule - kept as its own copy,
     // matching how the other validators in this app each keep their own
     // pattern copies too.
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9._-]{1,14}[a-z0-9]$");

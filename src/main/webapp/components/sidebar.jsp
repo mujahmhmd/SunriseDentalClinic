@@ -13,7 +13,7 @@
 <%
   String activePage = request.getParameter("active");
   if (activePage == null) activePage = "";
-  // Staffs/Doctors/Services/Billing are admin-only — RememberMeFilter blocks
+  // Staffs/Doctors/Services/Billing are admin-only - RememberMeFilter blocks
   // direct URL access too, this just keeps the links from being offered.
   boolean isAdmin = "admin".equals(session.getAttribute("role"));
 %>

@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/** The signed-in user's own account page — update their username or password. */
+/** The signed-in user's own account page - update their username or password. */
 @WebServlet("/settings")
 public class SettingsServlet extends HttpServlet {
 

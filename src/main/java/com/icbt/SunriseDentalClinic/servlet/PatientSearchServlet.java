@@ -34,7 +34,7 @@ public class PatientSearchServlet extends HttpServlet {
         String likeTerm = "%" + q.trim() + "%";
 
         // Staff reading (or scanning) the code off a printed ID card can
-        // paste/type it straight into the search box — "SDCP000007" isn't a
+        // paste/type it straight into the search box - "SDCP000007" isn't a
         // real column, so it's decoded back to the row id and matched
         // alongside the usual name/phone/NIC search.
         Integer patientCodeId = PatientValidator.parsePatientCode(q);

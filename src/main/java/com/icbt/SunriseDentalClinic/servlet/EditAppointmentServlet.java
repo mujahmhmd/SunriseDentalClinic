@@ -39,7 +39,7 @@ public class EditAppointmentServlet extends HttpServlet {
                 }
                 request.setAttribute("id", rs.getString("id"));
                 request.setAttribute("patientId", rs.getString("patient_id"));
-                request.setAttribute("patientDisplay", rs.getString("patient_name") + " — " + rs.getString("patient_phone"));
+                request.setAttribute("patientDisplay", rs.getString("patient_name") + " - " + rs.getString("patient_phone"));
                 request.setAttribute("doctorId", rs.getString("doctor_id"));
                 request.setAttribute("appointmentDate", rs.getDate("appointment_date").toString());
                 request.setAttribute("appointmentTime", rs.getTime("appointment_time").toString().substring(0, 5));
@@ -76,7 +76,7 @@ public class EditAppointmentServlet extends HttpServlet {
         try (Connection conn = DBConnection.getConnection()) {
 
             if (!CreateAppointmentServlet.patientExists(conn, patientId)) {
-                forwardWithError(request, response, "Selected patient couldn't be found — search and pick one again.", id);
+                forwardWithError(request, response, "Selected patient couldn't be found - search and pick one again.", id);
                 return;
             }
             if (!CreateAppointmentServlet.doctorExists(conn, doctorId)) {

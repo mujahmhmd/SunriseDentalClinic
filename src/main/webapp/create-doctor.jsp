@@ -69,7 +69,7 @@
 
         <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm p-7">
           <h1 class="font-display text-xl text-clinic-900 mb-1">Add a new doctor</h1>
-          <p class="text-sm text-clinic-700/70 mb-6">Doctors are clinic records only — they don't log into the portal.</p>
+          <p class="text-sm text-clinic-700/70 mb-6">Doctors are clinic records only - they don't log into the portal.</p>
 
           <% if (request.getAttribute("error") != null) { %>
           <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-3.5 py-2.5">
@@ -197,7 +197,7 @@
                     <% for (int h = 0; h < DoctorValidator.HOURS.length; h++) {
                          String[] hour = DoctorValidator.HOURS[h];
                          boolean hourChecked = hour[0].equals(startVal);
-                         // The last hour can never be a start — there'd be no later hour to end at.
+                         // The last hour can never be a start - there'd be no later hour to end at.
                          boolean startEnabled = h < DoctorValidator.HOURS.length - 1;
                     %>
                     <label class="relative inline-flex cursor-pointer">

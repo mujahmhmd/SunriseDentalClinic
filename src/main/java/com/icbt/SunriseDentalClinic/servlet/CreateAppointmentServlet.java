@@ -57,7 +57,7 @@ public class CreateAppointmentServlet extends HttpServlet {
         try (Connection conn = DBConnection.getConnection()) {
 
             if (!patientExists(conn, patientId)) {
-                forwardWithError(request, response, "Selected patient couldn't be found — search and pick one again.");
+                forwardWithError(request, response, "Selected patient couldn't be found - search and pick one again.");
                 return;
             }
             if (!doctorExists(conn, doctorId)) {
@@ -90,7 +90,7 @@ public class CreateAppointmentServlet extends HttpServlet {
                 }
             }
 
-            // Best-effort — a booking is still valid even if the confirmation
+            // Best-effort - a booking is still valid even if the confirmation
             // email fails to send (e.g. Brevo/network hiccup, or the patient
             // just doesn't have an email on file), so this never blocks the redirect.
             try {
@@ -175,7 +175,7 @@ public class CreateAppointmentServlet extends HttpServlet {
     }
 
     /**
-     * A patient can't be in two places at once — checked separately from
+     * A patient can't be in two places at once - checked separately from
      * slotTaken (which is per-doctor) since this catches the same patient
      * booked with a *different* doctor at the same date/time.
      *
@@ -200,7 +200,7 @@ public class CreateAppointmentServlet extends HttpServlet {
         }
     }
 
-    /** No-op if the patient has no email on file — see the class-level comment on the caller. */
+    /** No-op if the patient has no email on file - see the class-level comment on the caller. */
     private void sendConfirmationEmail(Connection conn, int appointmentId, int patientId, int doctorId,
                                         String appointmentDate, String appointmentTime, String reasonForVisit)
             throws SQLException, IOException, InterruptedException {
@@ -251,7 +251,7 @@ public class CreateAppointmentServlet extends HttpServlet {
         request.getRequestDispatcher("create-appointment.jsp").forward(request, response);
     }
 
-    /** Re-fetches "Name — Phone" for the search box so a validation error doesn't blank out the pick. */
+    /** Re-fetches "Name - Phone" for the search box so a validation error doesn't blank out the pick. */
     static String buildPatientDisplay(String patientId) throws ServletException {
         if (patientId == null || patientId.trim().isEmpty()) return "";
         try (Connection conn = DBConnection.getConnection();
@@ -259,7 +259,7 @@ public class CreateAppointmentServlet extends HttpServlet {
             ps.setInt(1, Integer.parseInt(patientId.trim()));
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("name") + " — " + rs.getString("phone");
+                    return rs.getString("name") + " - " + rs.getString("phone");
                 }
             }
         } catch (SQLException | NumberFormatException e) {

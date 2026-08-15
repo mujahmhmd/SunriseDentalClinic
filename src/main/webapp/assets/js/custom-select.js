@@ -1,13 +1,13 @@
 // Reusable custom dropdown. Progressively enhances any
 // <select data-custom-select> into a styled, fully keyboard-accessible
 // dropdown that matches the app's design (the native select's open option
-// list can't be restyled with CSS at all — it's OS/browser chrome, not
-// something a page can control — so this replaces just the visible parts
+// list can't be restyled with CSS at all - it's OS/browser chrome, not
+// something a page can control - so this replaces just the visible parts
 // while leaving the real <select> in the DOM, hidden, so form submission
 // and any existing 'change' listeners keep working unchanged).
 //
 // Usage: add data-custom-select to any <select>, include this script once.
-// No per-instance JS wiring needed — every matching select on the page is
+// No per-instance JS wiring needed - every matching select on the page is
 // enhanced automatically. An <option value=""> (the usual empty default) is
 // treated as a placeholder: it shows muted in the closed trigger, and in the
 // open list it's pinned first, styled distinctly (muted/italic, separated by
@@ -96,7 +96,7 @@
 
     // Where the currently-selected real option sits within listItems, so
     // opening the list highlights it (or the first row, if it's the
-    // placeholder — there's no list row for that to land on).
+    // placeholder - there's no list row for that to land on).
     function currentListIndex() {
       for (var i = 0; i < listItems.length; i++) {
         if (listItems[i].index === select.selectedIndex) return i;

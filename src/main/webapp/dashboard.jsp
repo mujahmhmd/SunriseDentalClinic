@@ -11,7 +11,7 @@
   String revenueThisMonth = request.getAttribute("revenueThisMonth") != null ? (String) request.getAttribute("revenueThisMonth") : "0.00";
   List<Map<String, String>> todaysSchedule = (List<Map<String, String>>) request.getAttribute("todaysSchedule");
   // Doctors/Services/Billing pages are admin-only (RememberMeFilter enforces
-  // it server-side) — this just keeps the dashboard from showing revenue or
+  // it server-side) - this just keeps the dashboard from showing revenue or
   // linking to pages Staff would immediately get bounced away from.
   boolean isAdmin = "admin".equals(session.getAttribute("role"));
 %>

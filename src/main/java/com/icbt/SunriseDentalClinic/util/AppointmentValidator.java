@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public final class AppointmentValidator {
 
     // Matches the "SDC000001" reference printed on a receipt, typed or
-    // pasted back in when searching for it — case-insensitive and tolerant
+    // pasted back in when searching for it - case-insensitive and tolerant
     // of the zero-padding, same reasoning as PatientValidator's patient-code pattern.
     private static final Pattern APPOINTMENT_NUMBER_PATTERN = Pattern.compile("^SDC0*([1-9][0-9]*)$", Pattern.CASE_INSENSITIVE);
 
@@ -74,7 +74,7 @@ public final class AppointmentValidator {
         return false;
     }
 
-    /** Patient-facing booking reference — just the row id, zero-padded and prefixed. */
+    /** Patient-facing booking reference - just the row id, zero-padded and prefixed. */
     public static String formatAppointmentNumber(int id) {
         return String.format("SDC%06d", id);
     }

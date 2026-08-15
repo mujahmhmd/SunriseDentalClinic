@@ -19,7 +19,7 @@ public final class StaffValidator {
     // Lowercase letters/numbers; dot, underscore, hyphen allowed only between them; 3-16 chars total.
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9._-]{1,14}[a-z0-9]$");
 
-    // Standard-shape email check (not a full RFC 5322 parser) — good enough
+    // Standard-shape email check (not a full RFC 5322 parser) - good enough
     // to catch typos without rejecting real addresses.
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 

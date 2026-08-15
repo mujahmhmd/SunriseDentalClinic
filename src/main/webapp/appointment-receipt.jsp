@@ -7,7 +7,7 @@
   }
   boolean billed = Boolean.TRUE.equals(request.getAttribute("billed"));
   List<Map<String, String>> billedServices = (List<Map<String, String>>) request.getAttribute("billedServices");
-  // Printed from the Billing ledger vs. the Appointments list — send the
+  // Printed from the Billing ledger vs. the Appointments list - send the
   // Back link to wherever the click actually came from.
   boolean fromBilling = "billing".equals(request.getParameter("from"));
   String backHref = fromBilling ? "billing" : "appointments";
@@ -32,7 +32,7 @@
     body { font-family: 'Outfit', sans-serif; }
     .font-display { font-family: 'Fraunces', serif; }
     /* Standalone page (no sidebar shell) so printing isn't fighting the
-       app's h-full/overflow-hidden dashboard layout — only the receipt
+       app's h-full/overflow-hidden dashboard layout - only the receipt
        card should end up on paper. */
     @media print {
       .no-print { display: none !important; }
@@ -66,14 +66,14 @@
       <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
       </svg>
-      Appointment booked — here's the receipt.
+      Appointment booked - here's the receipt.
     </div>
     <% } else if (request.getParameter("justPaid") != null) { %>
     <div class="no-print mb-4 rounded-xl bg-clinic-600/10 border border-clinic-600/20 text-clinic-800 text-sm px-4 py-3 flex items-center gap-2">
       <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
       </svg>
-      Payment confirmed — here's the bill.
+      Payment confirmed - here's the bill.
     </div>
     <% } %>
 

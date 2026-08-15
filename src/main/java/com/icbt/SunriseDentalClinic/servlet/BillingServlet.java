@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Read-only ledger of every billed (Completed) appointment — a different
+ * Read-only ledger of every billed (Completed) appointment - a different
  * view over the same appointments/appointment_services data the receipt
  * pulls from, filtered to only rows that actually have a total_amount, with
  * search and an optional date range plus a revenue total for whatever's
@@ -53,7 +53,7 @@ public class BillingServlet extends HttpServlet {
 
         String likeTerm = "%" + search + "%";
         // Staff reading the reference off a printed receipt can paste it
-        // straight in — "SDC000001" isn't a real column, so it's decoded
+        // straight in - "SDC000001" isn't a real column, so it's decoded
         // back to the row id and matched alongside the usual name search.
         Integer appointmentIdMatch = AppointmentValidator.parseAppointmentNumber(search);
 

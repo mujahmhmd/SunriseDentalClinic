@@ -1,6 +1,6 @@
 // Client-side validation for the Create Service and Edit Service forms
 // (identical fields, so shared here like staff/doctor-form-validation.js).
-// Server-side, ServiceValidator re-checks the same rules — this is UX only,
+// Server-side, ServiceValidator re-checks the same rules - this is UX only,
 // never the source of truth.
 function initServiceFormValidation(formId) {
   function showFieldError(id, message) {

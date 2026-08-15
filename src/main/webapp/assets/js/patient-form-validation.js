@@ -1,9 +1,9 @@
 // Client-side validation for the Create Patient and Edit Patient forms
 // (identical fields, so shared here like staff/doctor-form-validation.js).
-// Server-side, PatientValidator re-checks the same rules — this is UX only,
+// Server-side, PatientValidator re-checks the same rules - this is UX only,
 // never the source of truth.
 //
-// Fields validate on blur, not on every keystroke — see staff-form-validation.js
+// Fields validate on blur, not on every keystroke - see staff-form-validation.js
 // for why (flagging a strict-format field red mid-entry is more confusing
 // than helpful).
 function initPatientFormValidation(formId) {
@@ -13,7 +13,7 @@ function initPatientFormValidation(formId) {
   var MAX_AGE_YEARS = 120;
 
   // custom-select.js/custom-date.js hide the real field and build a visible
-  // "<id>-trigger" element in its place — that's what needs the red border,
+  // "<id>-trigger" element in its place - that's what needs the red border,
   // since styling the hidden original element wouldn't be seen.
   function fieldDisplayEl(id) {
     return document.getElementById(id + '-trigger') || document.getElementById(id);
@@ -83,7 +83,7 @@ function initPatientFormValidation(formId) {
   function validateEmail() {
     var email = document.getElementById('email').value.trim();
     if (email === '') {
-      // Optional — not every patient gives one.
+      // Optional - not every patient gives one.
       clearFieldError('email');
       return true;
     }
@@ -98,7 +98,7 @@ function initPatientFormValidation(formId) {
   function validateNic() {
     var nic = document.getElementById('nic').value.trim();
     if (nic === '') {
-      // Optional — children don't have one yet.
+      // Optional - children don't have one yet.
       clearFieldError('nic');
       return true;
     }
@@ -123,7 +123,7 @@ function initPatientFormValidation(formId) {
     if (!input) return;
     input.addEventListener('blur', fieldValidators[id]);
     // dateOfBirth is hidden once custom-date.js enhances it, so it never
-    // gets a real blur — but the calendar dispatches 'change' when a date
+    // gets a real blur - but the calendar dispatches 'change' when a date
     // is picked, which this also catches.
     input.addEventListener('change', fieldValidators[id]);
   });

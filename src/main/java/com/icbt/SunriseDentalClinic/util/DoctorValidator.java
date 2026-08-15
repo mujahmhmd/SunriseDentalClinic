@@ -93,7 +93,7 @@ public final class DoctorValidator {
     /**
      * @param days       the visiting days that were toggled on (e.g. from
      *                   request.getParameterValues("days")); no days selected
-     *                   is fine — a schedule isn't mandatory
+     *                   is fine - a schedule isn't mandatory
      * @param startTimes day name -> "start_&lt;day&gt;" form value ("HH:mm")
      * @param endTimes   day name -> "end_&lt;day&gt;" form value ("HH:mm")
      * @return the first validation error found, or null if everything's valid

@@ -1,7 +1,7 @@
 // Shared client-side validation for the Create Staff and Edit Staff forms
 // (they have identical fields, so the rules live here once instead of being
 // duplicated on both pages). Server-side, CreateStaffServlet/EditStaffServlet
-// re-check the same rules — this is UX only, never the source of truth.
+// re-check the same rules - this is UX only, never the source of truth.
 //
 // Fields validate on blur (not on every keystroke): for a strict-format
 // field like NIC or phone, the value is "wrong" for most of the time you're

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @WebServlet("/resetPassword")
 public class ResetPasswordServlet extends HttpServlet {
 
-    // Same strength rule as StaffValidator's password check — kept as its
+    // Same strength rule as StaffValidator's password check - kept as its
     // own copy rather than shared, matching how the other validators in
     // this app each keep their own pattern copies too.
     private static final Pattern PASSWORD_PATTERN =
@@ -53,7 +53,7 @@ public class ResetPasswordServlet extends HttpServlet {
 
         try (Connection conn = DBConnection.getConnection()) {
 
-            // Re-checked here, not just at step 2 — closes the window where
+            // Re-checked here, not just at step 2 - closes the window where
             // the code could otherwise expire (or already be used) between
             // being verified and the password actually being changed.
             if (!OtpUtil.verify(userId, verifiedOtp)) {

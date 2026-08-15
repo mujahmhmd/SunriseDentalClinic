@@ -1,7 +1,7 @@
 // Reusable date picker. Progressively enhances any
 // <input type="date" data-custom-date> into a styled calendar dropdown
 // matching the app's design (the native date input's calendar popup can't
-// be restyled with CSS at all — it's OS/browser chrome — so this replaces
+// be restyled with CSS at all - it's OS/browser chrome - so this replaces
 // just the visible parts while leaving the real <input> in the DOM, hidden,
 // so form submission and any existing 'change' listeners keep working
 // unchanged).
@@ -12,7 +12,7 @@
 // disabled in the grid, same as a native date input would do).
 //
 // Click the "Month Year" header label to zoom out to a month grid for that
-// year, and the year in that view to zoom out further to a 12-year grid —
+// year, and the year in that view to zoom out further to a 12-year grid -
 // lets you jump decades in a couple of clicks instead of hammering
 // prev/next-month (useful for e.g. a date of birth far in the past).
 //
@@ -24,7 +24,7 @@
 //   Shift+PageUp/PageDown - previous/next year
 //   Enter/Space            - choose the focused day
 //   Escape                 - close without changing the value
-// (the month/year zoom-out grids are plain tabbable buttons — Tab + native
+// (the month/year zoom-out grids are plain tabbable buttons - Tab + native
 // Enter/Space activation, no dedicated arrow-key scheme)
 (function () {
   var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -34,7 +34,7 @@
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   // Local-time formatting throughout (never toISOString/`new Date(str)`
-  // directly — both go through UTC and can land on the wrong day depending
+  // directly - both go through UTC and can land on the wrong day depending
   // on the browser's timezone).
   function toIso(date) {
     return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
@@ -99,7 +99,7 @@
 
     // Left-aligned (the default) runs the panel off the right edge of the
     // viewport for a trigger sitting near it (e.g. a "To" date field at the
-    // end of a filter row) — flip to right-aligned instead whenever that
+    // end of a filter row) - flip to right-aligned instead whenever that
     // would happen, so the whole calendar stays on screen.
     function positionPanel() {
       var overflowsRight = wrapper.getBoundingClientRect().left + PANEL_WIDTH > window.innerWidth;
@@ -109,7 +109,7 @@
 
     var selected = parseIso(input.value);
     var focused = selected || new Date();
-    var view = 'days'; // 'days' | 'months' | 'years' — header label zooms out a level at a time
+    var view = 'days'; // 'days' | 'months' | 'years' - header label zooms out a level at a time
     var grid; // populated by render()
     var CHEVRON_LEFT = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>';
     var CHEVRON_RIGHT = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>';
@@ -167,7 +167,7 @@
         } else {
           cellClass += 'text-clinic-900 hover:bg-clinic-50 cursor-pointer';
         }
-        // Today gets its own ring so it reads clearly even when unselected —
+        // Today gets its own ring so it reads clearly even when unselected -
         // skipped when selected since the solid fill already stands out and
         // stacking both would be visual noise.
         if (isToday && !isSelected) {
@@ -185,7 +185,7 @@
       grid = panel;
     }
 
-    // Zoomed-out month grid for the focused year — lets you jump straight to
+    // Zoomed-out month grid for the focused year - lets you jump straight to
     // a month instead of clicking prev/next-month repeatedly.
     function renderMonths() {
       var year = focused.getFullYear();
@@ -220,7 +220,7 @@
       grid = panel;
     }
 
-    // Zoomed-out year grid (12 years at a time) — one more level out from months.
+    // Zoomed-out year grid (12 years at a time) - one more level out from months.
     function renderYears() {
       var startYear = Math.floor(focused.getFullYear() / 12) * 12;
       var today = new Date();
@@ -289,7 +289,7 @@
     }
 
     // Moving between months/years can land on a day that doesn't exist in
-    // the new month (e.g. focused on the 31st, jump to a 30-day month) —
+    // the new month (e.g. focused on the 31st, jump to a 30-day month) -
     // clamp instead of letting Date roll over into the following month.
     function daysIn(year, month) {
       return new Date(year, month + 1, 0).getDate();
@@ -318,8 +318,8 @@
       // Nav/month/year clicks re-render panel.innerHTML, which detaches the
       // element that was actually clicked. If this click were left to bubble,
       // the document "click outside" listener below would then see a
-      // detached e.target — wrapper.contains(e.target) is false for a node
-      // no longer in the DOM — and treat it as an outside click, closing the
+      // detached e.target - wrapper.contains(e.target) is false for a node
+      // no longer in the DOM - and treat it as an outside click, closing the
       // panel mid-navigation. Stop it here since this handler already deals
       // with every click that lands inside the panel.
       e.stopPropagation();
@@ -364,7 +364,7 @@
     panel.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
       if (e.key === 'Tab') { close(false); return; }
-      // The month/year grids are plain tabbable buttons — native Enter/Space
+      // The month/year grids are plain tabbable buttons - native Enter/Space
       // activation and Tab order are enough there. The arrow/page-key scheme
       // below is specific to navigating the day grid.
       if (view !== 'days') return;
@@ -387,7 +387,7 @@
     syncLabel();
 
     // Lets a consuming page link two pickers into a from/to range (e.g.
-    // Billing's date filters) — updating the min/max after the fact, not
+    // Billing's date filters) - updating the min/max after the fact, not
     // just once from the min/max attributes at enhance time, since the
     // constraint depends on whatever's picked in the *other* field.
     input.customDate = {

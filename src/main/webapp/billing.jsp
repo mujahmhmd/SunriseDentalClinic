@@ -46,7 +46,7 @@
       <!-- Toolbar: search + date range. Table below (including the revenue
            stat cards) is replaced in place on every filter change.
            No overflow-hidden here (unlike the combined toolbar+table cards
-           elsewhere) — the date pickers' popup panels need to render outside
+           elsewhere) - the date pickers' popup panels need to render outside
            this card's edge, and clipping it hides them. -->
       <div class="bg-white rounded-2xl border border-clinic-100 shadow-sm mb-6">
         <div class="p-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
@@ -123,13 +123,13 @@
 
       searchInput.addEventListener('input', debouncedReload);
       // custom-date.js hides the real <input> and dispatches 'change' on it
-      // once a date is picked — that's what these need to listen for.
+      // once a date is picked - that's what these need to listen for.
       dateFromInput.addEventListener('change', debouncedReload);
       dateToInput.addEventListener('change', debouncedReload);
 
       // Keep the range valid in both directions: picking a From date
       // disables anything before it in the To picker, and picking a To
-      // date disables anything after it in the From picker — so an
+      // date disables anything after it in the From picker - so an
       // impossible range can't be selected in the first place.
       function syncDateRange() {
         if (dateFromInput.customDate) dateFromInput.customDate.setMax(dateToInput.value);
@@ -141,7 +141,7 @@
 
       // A plain page reload (rather than clearing the inputs in place) since
       // custom-date.js's visible trigger label is only ever updated by its
-      // own calendar clicks — resetting input.value directly wouldn't be
+      // own calendar clicks - resetting input.value directly wouldn't be
       // reflected there, leaving a stale-looking date shown.
       clearBtn.addEventListener('click', function () {
         window.location.href = 'billing';

@@ -94,7 +94,7 @@
   <div id="reopenModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-clinic-900/40 backdrop-blur-sm px-4">
     <div class="reopen-modal-card bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 transition-all duration-200 scale-95 opacity-0">
       <h3 class="font-display text-lg text-clinic-900 mb-1">Reopen this appointment?</h3>
-      <p class="text-sm text-clinic-700/70 mb-4">It goes back to Scheduled. Any billed services and the total charged will be cleared — you'll need to confirm payment again if you re-complete it.</p>
+      <p class="text-sm text-clinic-700/70 mb-4">It goes back to Scheduled. Any billed services and the total charged will be cleared - you'll need to confirm payment again if you re-complete it.</p>
 
       <form id="reopenForm">
         <input type="hidden" id="reopenAppointmentId">
@@ -253,7 +253,7 @@
         loadAppointments(state.q, state.page, false);
       });
 
-      // Reopen popup: a reason picker, not a plain yes/no confirm — see the
+      // Reopen popup: a reason picker, not a plain yes/no confirm - see the
       // comment above #reopenModal for why.
       var reopenModal = document.getElementById('reopenModal');
       var reopenModalCard = reopenModal.querySelector('.reopen-modal-card');
@@ -283,7 +283,7 @@
       }
 
       // "Other" reveals a small text box instead of leaving a radio with no
-      // detail behind it — every other reason is canned, no typing needed.
+      // detail behind it - every other reason is canned, no typing needed.
       reopenForm.addEventListener('change', function (e) {
         if (e.target.name === 'reopenReason') {
           reopenOtherText.classList.toggle('hidden', e.target.value !== 'Other');
@@ -328,7 +328,7 @@
         servicesListId: 'paymentServicesList',
         totalElId: 'paymentTotal',
         cancelBtnId: 'paymentCancelBtn',
-        // Cancelling the popup reverts the appointment to Scheduled server-side —
+        // Cancelling the popup reverts the appointment to Scheduled server-side -
         // refresh the table so that shows up instead of the stale "Processing Payment" row.
         onCancelled: function () { loadAppointments(searchInput.value, currentPage, false); }
       });

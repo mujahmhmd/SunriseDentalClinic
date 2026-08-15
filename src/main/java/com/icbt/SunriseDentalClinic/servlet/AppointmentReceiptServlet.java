@@ -61,7 +61,7 @@ public class AppointmentReceiptServlet extends HttpServlet {
                     request.setAttribute("reason", reason == null || reason.isEmpty() ? "General visit" : reason);
                     request.setAttribute("status", rs.getString("status"));
 
-                    // Only a Completed appointment has been billed — consultation_fee/
+                    // Only a Completed appointment has been billed - consultation_fee/
                     // total_amount are NULL until ConfirmAppointmentPaymentServlet sets them.
                     BigDecimal totalAmount = rs.getBigDecimal("total_amount");
                     if (totalAmount != null) {

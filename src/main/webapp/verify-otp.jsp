@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-  // Only reachable after forgot-password.jsp has actually issued a code —
+  // Only reachable after forgot-password.jsp has actually issued a code -
   // typing this URL directly with nothing in flight just sends you back to start.
   if (session.getAttribute("resetUserId") == null) {
     response.sendRedirect("forgot-password.jsp");
@@ -83,7 +83,7 @@
   <jsp:include page="components/toast.jsp" />
 
   <script>
-    // Only digits, and only up to 6 of them — nothing else a code can be.
+    // Only digits, and only up to 6 of them - nothing else a code can be.
     document.getElementById('otp').addEventListener('input', function () {
       this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });

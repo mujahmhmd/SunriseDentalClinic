@@ -1,9 +1,9 @@
 -- Optional: run this after schema.sql to populate the Patients page with
--- realistic test data — 6 adults (with NIC) and 7 children (no NIC, since
--- Sri Lanka doesn't issue one until ~15-16 — exactly the case date_of_birth
+-- realistic test data - 6 adults (with NIC) and 7 children (no NIC, since
+-- Sri Lanka doesn't issue one until ~15-16 - exactly the case date_of_birth
 -- was added to handle instead of requiring NIC).
 --
--- NOTE: unlike seed-staff.sql/seed-doctors.sql, this is NOT safe to re-run —
+-- NOTE: unlike seed-staff.sql/seed-doctors.sql, this is NOT safe to re-run -
 -- patients has no natural unique key (no username/slmc_reg_no equivalent),
 -- so running this twice will insert 13 duplicate rows. Run it once.
 
@@ -18,7 +18,7 @@ INSERT INTO patients (name, date_of_birth, phone, nic, gender, address) VALUES
     ('Roshan Gunasekara',       '1965-06-18', '0757777777', '651704567V',   'Male',   'Matara'),
     ('Vithya Sivakumar',        '1998-10-03', '0771313131', '982764567V',   'Other',  'Vavuniya');
 
--- Children (7) — nic left NULL, matching real Sri Lankan practice
+-- Children (7) - nic left NULL, matching real Sri Lankan practice
 INSERT INTO patients (name, date_of_birth, phone, nic, gender, address) VALUES
     ('Tharusha Silva',          '2015-03-10', '0713333333', NULL, 'Male',   'Galle'),
     ('Aisha Rizwan',            '2018-09-14', '0716666666', NULL, 'Female', 'Kalmunai'),

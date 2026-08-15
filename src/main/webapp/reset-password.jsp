@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-  // Only reachable once step 2 has actually verified a code — typing this
+  // Only reachable once step 2 has actually verified a code - typing this
   // URL directly (or coming back after the code's since expired) sends you
   // back to start rather than showing a form that can't succeed.
   Object otpVerified = session.getAttribute("otpVerified");

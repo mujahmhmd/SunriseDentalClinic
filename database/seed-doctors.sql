@@ -1,5 +1,5 @@
 -- Optional: run this after schema.sql to populate the Doctors page with
--- realistic test data — 16 doctors, every field filled (no NULLs left),
+-- realistic test data - 16 doctors, every field filled (no NULLs left),
 -- each with 1-2 specializations and a real weekly visiting schedule.
 -- Safe to re-run: all inserts use IGNORE / natural keys (slmc_reg_no).
 

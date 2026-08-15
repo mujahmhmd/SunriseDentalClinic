@@ -83,7 +83,7 @@
           </div>
           <div>
             <p class="text-xs text-clinic-700/50 mb-0.5">Gender</p>
-            <p class="text-sm font-medium text-clinic-900"><%= gender != null ? gender : "—" %></p>
+            <p class="text-sm font-medium text-clinic-900"><%= gender != null ? gender : "-" %></p>
           </div>
           <div>
             <p class="text-xs text-clinic-700/50 mb-0.5">Phone</p>

@@ -17,7 +17,7 @@
   String searchQuery = request.getAttribute("searchQuery") != null ? (String) request.getAttribute("searchQuery") : "";
   String encodedQuery = URLEncoder.encode(searchQuery, "UTF-8");
   // Doctors is staff-visible, but deleting a doctor record is admin-only
-  // (RememberMeFilter enforces it server-side too) — just hide the button.
+  // (RememberMeFilter enforces it server-side too) - just hide the button.
   boolean isAdmin = "admin".equals(session.getAttribute("role"));
 
   int rangeStart = doctorList == null || doctorList.isEmpty() ? 0 : (currentPage - 1) * pageSize + 1;

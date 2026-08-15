@@ -64,7 +64,7 @@
              if (reopenedBy != null) {
                String reopenTooltip = "Reason: " + (appt.get("reopenReason").isEmpty() ? "(none given)" : appt.get("reopenReason"));
                String previousTotal = appt.get("reopenPreviousTotal");
-               if (previousTotal != null && !previousTotal.isEmpty()) reopenTooltip += " — Previous total: Rs. " + previousTotal;
+               if (previousTotal != null && !previousTotal.isEmpty()) reopenTooltip += " - Previous total: Rs. " + previousTotal;
           %>
           <p class="text-[11px] text-clinic-700/50 mt-1 cursor-help" title="<%= reopenTooltip %>">
             &#8634; Reopened by <%= reopenedBy %> &middot; <%= appt.get("reopenedAt") %>

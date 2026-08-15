@@ -23,7 +23,7 @@ public class VerifyOtpServlet extends HttpServlet {
         Integer userId = session != null ? (Integer) session.getAttribute("resetUserId") : null;
         if (userId == null) {
             // Session expired, or this page was reached without going
-            // through step 1 first — start over rather than error out.
+            // through step 1 first - start over rather than error out.
             response.sendRedirect("forgot-password.jsp");
             return;
         }

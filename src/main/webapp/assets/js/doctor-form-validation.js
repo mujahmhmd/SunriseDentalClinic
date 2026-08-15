@@ -1,6 +1,6 @@
 // Client-side validation for the Create Doctor and Edit Doctor forms
 // (identical fields, so shared here like staff-form-validation.js).
-// Server-side, DoctorValidator re-checks the same rules — this is UX only,
+// Server-side, DoctorValidator re-checks the same rules - this is UX only,
 // never the source of truth.
 //
 // Fields validate on blur, not on every keystroke (see staff-form-validation.js
@@ -123,7 +123,7 @@ function initDoctorFormValidation(formId) {
     return true;
   }
 
-  // A day's time-range row only shows once that day is toggled on — no point
+  // A day's time-range row only shows once that day is toggled on - no point
   // asking for hours on a day the doctor doesn't visit.
   document.querySelectorAll('.day-checkbox').forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
@@ -167,7 +167,7 @@ function initDoctorFormValidation(formId) {
     return true;
   }
 
-  // Picking a Start hour unlocks only the End hours that come after it —
+  // Picking a Start hour unlocks only the End hours that come after it -
   // an End tag for an earlier/equal hour stays disabled and unclickable.
   document.querySelectorAll('.start-radio').forEach(function (radio) {
     radio.addEventListener('change', function () {

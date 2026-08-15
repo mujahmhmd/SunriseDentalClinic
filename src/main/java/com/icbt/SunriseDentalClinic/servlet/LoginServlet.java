@@ -61,7 +61,7 @@ public class LoginServlet extends HttpServlet {
                     session.setAttribute("role", rs.getString("role"));
 
                     // A "remember me" token, unlike the session above, survives a
-                    // server redeploy — the login stays valid until it expires
+                    // server redeploy - the login stays valid until it expires
                     // (7 days if checked, 1 day by default), not just until the
                     // in-memory session gets wiped.
                     int validDays = rememberMe ? REMEMBER_DAYS : DEFAULT_DAYS;

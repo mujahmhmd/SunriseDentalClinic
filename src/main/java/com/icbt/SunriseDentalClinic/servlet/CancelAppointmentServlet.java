@@ -21,7 +21,7 @@ public class CancelAppointmentServlet extends HttpServlet {
 
         String id = request.getParameter("id");
 
-        // Only a Scheduled appointment can be cancelled this way — an
+        // Only a Scheduled appointment can be cancelled this way - an
         // already Completed/Cancelled row is left alone.
         String sql = "UPDATE appointments SET status = 'Cancelled' WHERE id = ? AND status = 'Scheduled'";
 

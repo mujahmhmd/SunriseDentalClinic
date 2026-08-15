@@ -2,7 +2,7 @@
 // /searchPatients (min 2 characters, debounced) and shows matches in a
 // dropdown; clicking one fills the hidden id input used for submission.
 // Unlike custom-select.js there's no backing <select> with a fixed option
-// list — the choices are fetched live from the patients table, since an
+// list - the choices are fetched live from the patients table, since an
 // appointment must reference an existing patient record, never a freely
 // typed one.
 //
@@ -31,7 +31,7 @@ function initPatientSearch(config) {
       li.dataset.index = i;
       li.className = 'px-3.5 py-2 cursor-pointer hover:bg-clinic-50';
       li.innerHTML = '<span class="text-clinic-900 font-medium">' + item.name + '</span>' +
-        '<span class="text-clinic-700/50"> — ' + item.phone + '</span>';
+        '<span class="text-clinic-700/50"> - ' + item.phone + '</span>';
       results.appendChild(li);
     });
     results.classList.remove('hidden');
@@ -64,13 +64,13 @@ function initPatientSearch(config) {
   function choose(item) {
     hidden.value = item.id;
     hidden.dispatchEvent(new Event('change', { bubbles: true }));
-    input.value = item.name + ' — ' + item.phone;
+    input.value = item.name + ' - ' + item.phone;
     items = [];
     results.classList.add('hidden');
   }
 
   input.addEventListener('input', function () {
-    // Any manual edit invalidates the previous pick — a match must be
+    // Any manual edit invalidates the previous pick - a match must be
     // clicked (or chosen via Enter) again before this can be submitted.
     hidden.value = '';
     hidden.dispatchEvent(new Event('change', { bubbles: true }));

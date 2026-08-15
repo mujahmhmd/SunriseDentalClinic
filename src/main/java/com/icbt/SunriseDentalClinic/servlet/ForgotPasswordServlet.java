@@ -20,7 +20,7 @@ import java.sql.SQLException;
  * Step 1 of "forgot password": email in, OTP out (emailed via Brevo).
  * Deliberately tells the user outright if no account has that email
  * (rather than the more guarded "if an account exists, we've sent a code"
- * wording other systems use) — that's a product choice, not an oversight:
+ * wording other systems use) - that's a product choice, not an oversight:
  * simpler UX for a small clinic's own staff/admin accounts, at the cost of
  * letting someone probe which emails are registered.
  */
@@ -71,7 +71,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException("Database error while issuing password reset code", e);
         } catch (Exception e) {
-            // Brevo/network failure — don't leak the raw exception to the
+            // Brevo/network failure - don't leak the raw exception to the
             // user, but do log it so the actual cause (e.g. Brevo's IP
             // allowlist rejecting a request, as happened during setup) is
             // findable in Tomcat's logs rather than just "it didn't work".

@@ -24,7 +24,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS address VARCHAR(255) NULL AFTER nic;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20) NULL AFTER address;
 
 -- Email is required going forward on the Create/Edit Staff forms (enforced
--- in StaffValidator, not here) — kept nullable at the DB level so this
+-- in StaffValidator, not here) - kept nullable at the DB level so this
 -- ALTER doesn't fail on any staff rows that existed before it was added.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(150) NULL UNIQUE AFTER phone;
 
@@ -68,7 +68,7 @@ DO
     DELETE FROM password_reset_otps WHERE expires_at < NOW();
 
 -- Doctors are a separate concept from users: they never log into the portal,
--- so there's no username/password/role here — just clinic records staff
+-- so there's no username/password/role here - just clinic records staff
 -- manage on their behalf.
 CREATE TABLE IF NOT EXISTS doctors (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS doctors (
 );
 
 -- Consultation fee is now required (appointment billing needs a real
--- number, not a blank) — backfill any existing NULLs first so promoting
+-- number, not a blank) - backfill any existing NULLs first so promoting
 -- the column to NOT NULL doesn't fail on doctors added before this was
 -- mandatory. Safe to re-run: the UPDATE only touches remaining NULLs, and
 -- MODIFYing to the same definition twice is a no-op.
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS doctor_schedules (
 -- Patients don't log in either. NIC is nullable since children (a real case
 -- here, given Pediatric Dentistry) don't have one issued in Sri Lanka until
 -- around 15-16, so date_of_birth (not NIC) is the required identity field.
--- No status column — unlike Staff/Doctor, there's no login or booking
+-- No status column - unlike Staff/Doctor, there's no login or booking
 -- visibility for a patient's own "active" toggle to control; appointment
 -- status will live on the future appointments table instead.
 CREATE TABLE IF NOT EXISTS patients (
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS patients (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Optional — not every patient has (or wants to give) an email. When it's
+-- Optional - not every patient has (or wants to give) an email. When it's
 -- set, booking/billing emails go out automatically (CreateAppointmentServlet,
 -- ConfirmAppointmentPaymentServlet); when it's NULL, those steps just skip
 -- sending, no error. Not UNIQUE (unlike users.email): a shared household
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS patients (
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS email VARCHAR(150) NULL AFTER phone;
 
 -- Books an existing patient in with an existing doctor at a date/time.
--- Treatment isn't chosen here — the doctor decides what was actually done
+-- Treatment isn't chosen here - the doctor decides what was actually done
 -- during the visit, so services get attached separately once an appointment
 -- is marked Completed (the "appointment_services" join table below), not on
 -- this row. Clicking Complete moves status to 'Processing Payment' while the
@@ -158,7 +158,7 @@ ALTER TABLE patients ADD COLUMN IF NOT EXISTS email VARCHAR(150) NULL AFTER phon
 -- in application code instead (excluding Cancelled rows) rather than at the
 -- DB level.
 --
--- There's no separate appointment-number column — the patient-facing
+-- There's no separate appointment-number column - the patient-facing
 -- "SDC000001" reference shown on the receipt is just the id, zero-padded
 -- and prefixed at display time (see AppointmentValidator.formatAppointmentNumber),
 -- since the id already is a unique, ever-increasing identifier.
@@ -184,8 +184,8 @@ ALTER TABLE appointments ADD COLUMN IF NOT EXISTS consultation_fee DECIMAL(10,2)
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS total_amount DECIMAL(10,2) NULL AFTER consultation_fee;
 
 -- Reopen trace. Staff (not just admin) can reopen a Completed/Cancelled
--- appointment — needed so a mistake can be fixed even when no admin is
--- around — but that clears real billing data, so who/when/why and what the
+-- appointment - needed so a mistake can be fixed even when no admin is
+-- around - but that clears real billing data, so who/when/why and what the
 -- total was get kept here for admin to review afterward. Only the most
 -- recent reopen is kept (overwritten each time), not a full history, to
 -- keep this simple; that's enough for "who cleared this bill and why".
@@ -196,7 +196,7 @@ ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reopen_previous_total DECIMAL(
 
 -- Treatments actually billed on a completed appointment (picked in the
 -- payment popup, not at booking time). service_name/price are a snapshot
--- at billing time, same reasoning as consultation_fee above — editing the
+-- at billing time, same reasoning as consultation_fee above - editing the
 -- Services catalog later shouldn't silently change an already-charged bill.
 CREATE TABLE IF NOT EXISTS appointment_services (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -222,7 +222,7 @@ INSERT IGNORE INTO specializations (name) VALUES
 
 -- Treatment types offered by the clinic. Not tied to an appointment at
 -- booking time (the actual treatment isn't known until the doctor sees the
--- patient) — appointments will instead attach one or more services once
+-- patient) - appointments will instead attach one or more services once
 -- marked complete, so this is just the priced catalog they're chosen from.
 CREATE TABLE IF NOT EXISTS services (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS services (
 );
 
 -- Standard catalog, kept short rather than exhaustive. Prices are rough
--- placeholder LKR figures, not verified market rates — edit each one to
+-- placeholder LKR figures, not verified market rates - edit each one to
 -- your clinic's actual pricing from the Services page.
 INSERT IGNORE INTO services (name, price, description) VALUES
     ('Dental Consultation', 1500.00, 'Initial examination and diagnosis'),

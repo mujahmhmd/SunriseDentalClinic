@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @WebServlet("/updateAccountPassword")
 public class UpdateAccountPasswordServlet extends HttpServlet {
 
-    // Same strength rule as StaffValidator's password check — kept as its
+    // Same strength rule as StaffValidator's password check - kept as its
     // own copy, matching how the other validators in this app each keep
     // their own pattern copies too.
     private static final Pattern PASSWORD_PATTERN =
@@ -58,7 +58,7 @@ public class UpdateAccountPasswordServlet extends HttpServlet {
                 }
             }
 
-            // Re-checked here, not just via the page's AJAX gate — a request
+            // Re-checked here, not just via the page's AJAX gate - a request
             // can always bypass that and submit the form directly.
             if (currentPassword == null || currentPassword.isEmpty() || !BCrypt.checkpw(currentPassword, storedHash)) {
                 forwardWithError(request, response, "Current password is incorrect.");

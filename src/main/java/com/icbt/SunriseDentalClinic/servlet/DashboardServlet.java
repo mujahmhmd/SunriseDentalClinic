@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Landing page after login — a handful of at-a-glance stats plus today's
+ * Landing page after login - a handful of at-a-glance stats plus today's
  * appointment schedule, each pulled from data the rest of the app already
  * maintains (nothing new is tracked just for this page).
  */

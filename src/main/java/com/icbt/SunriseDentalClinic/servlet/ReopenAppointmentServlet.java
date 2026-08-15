@@ -16,14 +16,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Undoes a Completed or Cancelled appointment back to Scheduled — the fix
+ * Undoes a Completed or Cancelled appointment back to Scheduled - the fix
  * for "staff marked this complete by mistake". Reopening a Completed
  * appointment also clears whatever was billed on it (appointment_services
  * rows, consultation_fee, total_amount) rather than carrying stale charges
  * forward; if it gets completed again, payment is confirmed fresh through
  * the normal popup.
  *
- * Available to Staff as well as Admin (not gated in RememberMeFilter) —
+ * Available to Staff as well as Admin (not gated in RememberMeFilter) -
  * blocking it entirely would leave a mis-completed appointment stuck
  * whenever no admin happens to be around. In exchange, who reopened it,
  * when, why, and what the cleared total was get recorded so it's still

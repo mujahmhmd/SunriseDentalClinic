@@ -20,7 +20,7 @@ import java.sql.SQLException;
  * (assets/js/settings-validation.js): the new-password fields only unlock
  * once the typed current password is confirmed correct, without a full page
  * round trip. UpdateAccountPasswordServlet re-checks this independently
- * server-side when the form is actually submitted — this endpoint is UX
+ * server-side when the form is actually submitted - this endpoint is UX
  * only, never the real gate, since a request can always bypass it.
  */
 @WebServlet("/verifyCurrentPassword")

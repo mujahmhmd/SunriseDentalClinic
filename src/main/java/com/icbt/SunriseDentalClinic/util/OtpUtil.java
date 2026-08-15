@@ -35,7 +35,7 @@ public final class OtpUtil {
         Timestamp expiresAt = Timestamp.from(Instant.now().plusSeconds(OTP_VALID_MINUTES * 60L));
 
         try (Connection conn = DBConnection.getConnection()) {
-            // One live code per account at a time — clears anything
+            // One live code per account at a time - clears anything
             // outstanding (expired, used, or not) before issuing a fresh one.
             try (PreparedStatement ps = conn.prepareStatement("DELETE FROM password_reset_otps WHERE user_id = ?")) {
                 ps.setInt(1, userId);
