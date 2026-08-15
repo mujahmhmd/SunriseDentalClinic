@@ -93,8 +93,8 @@
       <p class="text-xs font-semibold tracking-widest text-coral-500 uppercase mb-3">New staff onboarding</p>
       <h1 class="font-display text-3xl sm:text-4xl text-clinic-900 mb-3">How to use the portal</h1>
       <p class="text-sm sm:text-base text-clinic-700/75 max-w-2xl leading-relaxed">
-        A walkthrough of the day-to-day screens a front-desk or clinical staff account uses —
-        logging in, adding patients, booking appointments, and taking payment — with real
+        A walkthrough of the day-to-day screens a front-desk or clinical staff account uses -
+        logging in, adding patients, booking appointments, and taking payment - with real
         screenshots from the system so you know exactly what to expect.
       </p>
     </div>
@@ -108,15 +108,16 @@
       <ol class="text-sm">
         <li><a href="#logging-in" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">1. Logging in</a></li>
         <li><a href="#forgot-password" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">2. Forgot your password?</a></li>
-        <li><a href="#dashboard" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">3. The dashboard</a></li>
-        <li><a href="#patients" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">4. Managing patients</a></li>
-        <li><a href="#doctors" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">5. Doctors</a></li>
-        <li><a href="#booking" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">6. Booking an appointment</a></li>
-        <li><a href="#appointments" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">7. The appointments list</a></li>
-        <li><a href="#billing-appt" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">8. Complete &amp; bill</a></li>
-        <li><a href="#reopen" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">9. Reopening a visit</a></li>
-        <li><a href="#admin-only" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">10. Admin-only areas</a></li>
-        <li><a href="#need-help" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">11. Getting help</a></li>
+        <li><a href="#settings" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">3. Your account settings</a></li>
+        <li><a href="#dashboard" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">4. The dashboard</a></li>
+        <li><a href="#patients" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">5. Managing patients</a></li>
+        <li><a href="#doctors" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">6. Doctors</a></li>
+        <li><a href="#booking" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">7. Booking an appointment</a></li>
+        <li><a href="#appointments" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">8. The appointments list</a></li>
+        <li><a href="#billing-appt" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">9. Complete &amp; bill</a></li>
+        <li><a href="#reopen" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">10. Reopening a visit</a></li>
+        <li><a href="#admin-only" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">11. Admin-only areas</a></li>
+        <li><a href="#need-help" class="toc-link text-clinic-700/70 hover:text-clinic-900 transition">12. Getting help</a></li>
       </ol>
     </nav>
 
@@ -144,7 +145,7 @@
             <li>Tick <strong class="text-clinic-900">Keep me logged in</strong> if this is your own device, so you don't have to sign in every visit.</li>
             <li>Click <strong class="text-clinic-900">Login to Dashboard</strong>.</li>
             <li>Forgot your password? Click <strong class="text-clinic-900">Forgot?</strong> next to the Password field, enter your email, and a
-              6-digit code will arrive shortly — it expires after a few minutes, so use it quickly.</li>
+              6-digit code will arrive shortly - it expires after a few minutes, so use it quickly.</li>
           </ul>
         </div>
       </section>
@@ -183,17 +184,52 @@
             <li>On the login screen, click <strong class="text-clinic-900">Forgot?</strong> next to the Password field, then enter the
               <strong class="text-clinic-900">email</strong> on your account and click <strong class="text-clinic-900">Send Reset Code</strong>.</li>
             <li>Check your inbox for a <strong class="text-clinic-900">6-digit code</strong> and enter it on the next screen. It
-              <strong class="text-clinic-900">expires in 3 minutes</strong>, so use it quickly — if it expires, go back and resend a fresh one.</li>
+              <strong class="text-clinic-900">expires in 3 minutes</strong>, so use it quickly - if it expires, go back and resend a fresh one.</li>
             <li>Choose a <strong class="text-clinic-900">new password</strong>, confirm it, and you're straight back on the login screen ready to sign in.</li>
           </ol>
           <p class="text-sm text-clinic-700/70">No email on your account, or the reset email never arrives? Ask an admin to check or update your email under Staffs.</p>
         </div>
       </section>
 
-      <!-- 3. Dashboard -->
-      <section id="dashboard" class="scroll-mt-24">
+      <!-- 3. Settings -->
+      <section id="settings" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
           <span class="step-num bg-clinic-800 text-clinic-50">3</span>
+          <div>
+            <h2 class="font-display text-2xl text-clinic-900">Your account settings</h2>
+            <p class="text-sm text-clinic-700/70 mt-1">Update your own username or password any time, from inside the portal.</p>
+          </div>
+        </div>
+        <div class="pl-0 sm:pl-[3.25rem] space-y-5">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="shot-frame">
+              <div class="shot-bar">
+                <span class="shot-dot bg-red-300"></span><span class="shot-dot bg-amber-300"></span><span class="shot-dot bg-green-300"></span>
+              </div>
+              <img src="assets/images/help/14-settings.png" alt="Settings page with an Account card for the username and a Change Password card">
+            </div>
+            <div class="shot-frame">
+              <div class="shot-bar">
+                <span class="shot-dot bg-red-300"></span><span class="shot-dot bg-amber-300"></span><span class="shot-dot bg-green-300"></span>
+              </div>
+              <img src="assets/images/help/15-settings-password-verified.png" alt="Change Password card after the current password is verified, with the New Password fields unlocked">
+            </div>
+          </div>
+          <p class="text-sm text-clinic-700/85">Click <strong class="text-clinic-900">Settings</strong> at the bottom of the sidebar. There are two independent cards:</p>
+          <ul class="space-y-2.5 text-sm text-clinic-700/85 list-disc pl-5">
+            <li><strong class="text-clinic-900">Account</strong> - change the username you sign in with, then click <strong class="text-clinic-900">Update Username</strong>.</li>
+            <li><strong class="text-clinic-900">Change password</strong> - type your <strong class="text-clinic-900">current password</strong> first. The New Password fields stay locked
+              until it's confirmed correct; get it wrong and you'll see <em>"Current password is incorrect"</em> right there instead of losing anything you'd already typed.</li>
+            <li>Once verified, enter a <strong class="text-clinic-900">new password</strong> and <strong class="text-clinic-900">confirm</strong> it - they have to match - then click
+              <strong class="text-clinic-900">Update Password</strong>.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Dashboard -->
+      <section id="dashboard" class="scroll-mt-24">
+        <div class="flex items-start gap-4 mb-5">
+          <span class="step-num bg-clinic-800 text-clinic-50">4</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">The dashboard</h2>
             <p class="text-sm text-clinic-700/70 mt-1">Your home screen after logging in.</p>
@@ -211,15 +247,15 @@
               <strong class="text-clinic-900">active doctors</strong> at a glance. (The revenue card only appears for admin accounts.)</li>
             <li><strong class="text-clinic-900">Today's Schedule</strong> lists everyone booked in for today, so you can see the day at a glance.</li>
             <li><strong class="text-clinic-900">Quick Actions</strong> on the right jump straight to booking an appointment or adding a patient/doctor.</li>
-            <li>The left <strong class="text-clinic-900">sidebar</strong> is how you get to every other page — it's the same on every screen.</li>
+            <li>The left <strong class="text-clinic-900">sidebar</strong> is how you get to every other page - it's the same on every screen.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 4. Patients -->
+      <!-- 5. Patients -->
       <section id="patients" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">4</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">5</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Managing patients</h2>
             <p class="text-sm text-clinic-700/70 mt-1">Every patient the clinic has ever seen, in one list.</p>
@@ -233,7 +269,7 @@
             <img src="assets/images/help/03-patients.png" alt="Patients list with patient ID, name, age, gender, phone, NIC and action icons">
           </div>
           <ul class="space-y-2.5 text-sm text-clinic-700/85 list-disc pl-5">
-            <li>Use the <strong class="text-clinic-900">search box</strong> to find someone by name, phone number or NIC — or their
+            <li>Use the <strong class="text-clinic-900">search box</strong> to find someone by name, phone number or NIC - or their
               printed <strong class="text-clinic-900">Patient ID</strong> (the <em>SDCP000xxx</em> code).</li>
             <li>The icons on the right of each row: <strong class="text-clinic-900">ID card</strong> (print a patient ID card),
               <strong class="text-clinic-900">pencil</strong> (edit details), <strong class="text-clinic-900">trash</strong> (delete).</li>
@@ -246,19 +282,19 @@
           </div>
           <ul class="space-y-2.5 text-sm text-clinic-700/85 list-disc pl-5">
             <li>Click <strong class="text-clinic-900">Create Patient</strong> to add someone new. Only <strong class="text-clinic-900">Full Name</strong>,
-              <strong class="text-clinic-900">Date of Birth</strong> and <strong class="text-clinic-900">Contact Number</strong> are required — everything else is optional.</li>
+              <strong class="text-clinic-900">Date of Birth</strong> and <strong class="text-clinic-900">Contact Number</strong> are required - everything else is optional.</li>
             <li>If you add an <strong class="text-clinic-900">email</strong>, that patient automatically gets an emailed confirmation whenever
-              you book them an appointment, and an emailed receipt when their visit is billed. No email on file just means those emails are skipped —
+              you book them an appointment, and an emailed receipt when their visit is billed. No email on file just means those emails are skipped -
               nothing breaks.</li>
-            <li>Patients are clinic records only — they never log into the portal themselves.</li>
+            <li>Patients are clinic records only - they never log into the portal themselves.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 5. Doctors -->
+      <!-- 6. Doctors -->
       <section id="doctors" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">5</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">6</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Doctors</h2>
             <p class="text-sm text-clinic-700/70 mt-1">The clinic's visiting doctors and their fees.</p>
@@ -275,15 +311,15 @@
             <li>Staff accounts can view the full doctor directory, <strong class="text-clinic-900">add a new doctor</strong> and
               <strong class="text-clinic-900">edit</strong> their details, specializations or active/inactive status.</li>
             <li>Only an <strong class="text-clinic-900">Active</strong> doctor shows up as a choice when booking an appointment.</li>
-            <li><strong class="text-clinic-900">Deleting</strong> a doctor is admin-only — ask an admin if one needs to be removed.</li>
+            <li><strong class="text-clinic-900">Deleting</strong> a doctor is admin-only - ask an admin if one needs to be removed.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 6. Booking an appointment -->
+      <!-- 7. Booking an appointment -->
       <section id="booking" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">6</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">7</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Booking an appointment</h2>
             <p class="text-sm text-clinic-700/70 mt-1">The most common task on the portal.</p>
@@ -314,10 +350,10 @@
         </div>
       </section>
 
-      <!-- 7. Appointments list -->
+      <!-- 8. Appointments list -->
       <section id="appointments" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">7</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">8</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">The appointments list</h2>
             <p class="text-sm text-clinic-700/70 mt-1">Where you manage every booking, from scheduling to payment.</p>
@@ -340,10 +376,10 @@
         </div>
       </section>
 
-      <!-- 8. Complete & bill -->
+      <!-- 9. Complete & bill -->
       <section id="billing-appt" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">8</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">9</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Completing &amp; billing a visit</h2>
             <p class="text-sm text-clinic-700/70 mt-1">Once the patient has been seen.</p>
@@ -358,7 +394,7 @@
           </div>
           <ol class="space-y-2.5 text-sm text-clinic-700/85 list-decimal pl-5">
             <li>On the Appointments list, click the <strong class="text-clinic-900">✓ (Complete &amp; Bill)</strong> icon on that patient's row.</li>
-            <li>Tick every <strong class="text-clinic-900">treatment or service</strong> that was actually performed during the visit — the
+            <li>Tick every <strong class="text-clinic-900">treatment or service</strong> that was actually performed during the visit - the
               consultation fee is always included.</li>
             <li>Check the <strong class="text-clinic-900">Total</strong> at the bottom, then click <strong class="text-clinic-900">Confirm Payment</strong>.</li>
             <li>The appointment moves to <strong class="text-clinic-900">Completed</strong>, and a receipt is emailed to the patient automatically if they have an email on file.
@@ -367,10 +403,10 @@
         </div>
       </section>
 
-      <!-- 9. Reopen -->
+      <!-- 10. Reopen -->
       <section id="reopen" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-clinic-800 text-clinic-50">9</span>
+          <span class="step-num bg-clinic-800 text-clinic-50">10</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Made a mistake? Reopen the visit</h2>
             <p class="text-sm text-clinic-700/70 mt-1">Fixing a Completed or Cancelled appointment.</p>
@@ -380,11 +416,11 @@
           <p class="text-sm text-clinic-700/85">
             Marked the wrong appointment as complete, ticked the wrong services, or the patient asked to reschedule after
             checkout? Click the <strong class="text-clinic-900">↺ reopen</strong> icon on that row (it replaces the ✓ icon
-            once a visit is Completed or Cancelled — see the reopened example in the appointments screenshot above).
+            once a visit is Completed or Cancelled - see the reopened example in the appointments screenshot above).
           </p>
           <ol class="space-y-2.5 text-sm text-clinic-700/85 list-decimal pl-5">
             <li>Click <strong class="text-clinic-900">↺ Reopen</strong>.</li>
-            <li>Pick the reason that fits — <em>marked complete/cancelled by mistake</em>, <em>wrong service(s) or amount billed</em>,
+            <li>Pick the reason that fits - <em>marked complete/cancelled by mistake</em>, <em>wrong service(s) or amount billed</em>,
               <em>payment wasn't actually completed</em>, <em>patient requested to reschedule</em>, or <em>Other</em> (with a short note).</li>
             <li>Confirm. The appointment goes back to <strong class="text-clinic-900">Scheduled</strong> with its billing cleared, ready to be
               completed and billed correctly. Who reopened it, when, and why stays visible on the row so there's always a clear trail.</li>
@@ -392,10 +428,10 @@
         </div>
       </section>
 
-      <!-- 10. Admin-only -->
+      <!-- 11. Admin-only -->
       <section id="admin-only" class="scroll-mt-24">
         <div class="flex items-start gap-4 mb-5">
-          <span class="step-num bg-coral-500 text-white">10</span>
+          <span class="step-num bg-coral-500 text-white">11</span>
           <div>
             <h2 class="font-display text-2xl text-clinic-900">Admin-only areas</h2>
             <p class="text-sm text-clinic-700/70 mt-1">A few sidebar items are only visible to admin accounts.</p>
@@ -403,7 +439,7 @@
         </div>
         <div class="pl-0 sm:pl-[3.25rem]">
           <p class="text-sm text-clinic-700/85 mb-4">
-            If you're logged in as staff, you won't see these in your sidebar at all — that's expected, not a bug.
+            If you're logged in as staff, you won't see these in your sidebar at all - that's expected, not a bug.
             Ask an admin if you need something changed in one of them:
           </p>
           <div class="grid sm:grid-cols-3 gap-3.5">
@@ -423,12 +459,12 @@
         </div>
       </section>
 
-      <!-- 11. Need help -->
+      <!-- 12. Need help -->
       <section id="need-help" class="scroll-mt-24">
         <div class="bg-clinic-900 rounded-2xl p-7 sm:p-9 text-center">
           <h2 class="font-display text-2xl text-white mb-2">Still stuck on something?</h2>
           <p class="text-sm text-clinic-50/70 max-w-md mx-auto mb-6">
-            Ask the admin who set up your account — they can check your permissions, reset your password, or walk you
+            Ask the admin who set up your account - they can check your permissions, reset your password, or walk you
             through anything this guide didn't cover.
           </p>
           <a href="login.jsp" class="inline-flex items-center gap-2 bg-white text-clinic-900 text-sm font-medium rounded-xl px-5 py-2.5 hover:bg-clinic-50 transition">
@@ -447,7 +483,7 @@
     // Scroll-spy for the "On this page" nav. Rather than IntersectionObserver
     // (whose fixed viewport band misses short sections and races with the
     // click handler's own state), this tracks which section's top has most
-    // recently passed a fixed reference line near the top of the viewport —
+    // recently passed a fixed reference line near the top of the viewport -
     // the same logic drives both scrolling and clicking, so nothing fights.
     (function () {
       var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
@@ -468,7 +504,7 @@
         var scrollY = window.scrollY;
         // The last section(s) can be too short/near the bottom of the page for
         // their top to ever reach REFERENCE_OFFSET (there's no more room to
-        // scroll past them) — cap each section's activation point at the page's
+        // scroll past them) - cap each section's activation point at the page's
         // max scroll so they still get picked up once the user reaches the bottom.
         var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         var current = sections[0];
