@@ -7,6 +7,15 @@
 // field like NIC or phone, the value is "wrong" for most of the time you're
 // typing it, so flagging it red mid-entry reads as broken rather than
 // helpful. Blur still gives near-instant feedback without that flicker.
+//
+// NIC and Email additionally get a live *availability* check once their
+// format is valid: debounced 300ms after typing stops (and again
+// immediately on blur), an AJAX call to CheckStaffFieldServlet reports
+// whether another user already has that value, right under the field -
+// same live-check pattern used for NIC/SLMC on the doctor forms and the
+// current-password check on the Settings page, including the same
+// race-condition guard (a later check's response can otherwise land after
+// an earlier one's and show a stale result).
 function initStaffFormValidation(formId, options) {
   options = options || {};
   var passwordRequired = options.passwordRequired !== false; // default: required
@@ -17,6 +26,12 @@ function initStaffFormValidation(formId, options) {
   // Lowercase letters/numbers, dot/underscore/hyphen allowed in the middle only, 3-16 chars total.
   var USERNAME_PATTERN = /^[a-z0-9][a-z0-9._-]{1,14}[a-z0-9]$/;
   var PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+  // Edit form only - excludes the staff member's own record from the
+  // availability check, so re-saving their unchanged NIC/email isn't
+  // flagged as a clash.
+  var staffIdInput = document.getElementById('staffId');
+  var excludeId = staffIdInput ? staffIdInput.value : '';
 
   function showFieldError(id, message) {
     var errorEl = document.getElementById(id + 'Error');
@@ -81,6 +96,73 @@ function initStaffFormValidation(formId, options) {
     return true;
   }
 
+  // One factory covers both NIC and Email - same check, just a different
+  // field name/format-validator/not-available message.
+  function createAvailabilityChecker(config) {
+    var input = document.getElementById(config.inputId);
+    if (!input) return { checkNow: function () {}, isTaken: function () { return false; } };
+
+    var debounceTimer = null;
+    var requestId = 0;
+    var taken = false;
+
+    function check() {
+      clearTimeout(debounceTimer);
+      // Only worth asking the server once the value is actually well-formed -
+      // an incomplete/invalid value can't be "taken", it's just not done yet.
+      if (!config.formatValidator()) {
+        taken = false;
+        return;
+      }
+      var value = input.value.trim();
+      var thisRequest = ++requestId;
+
+      fetch('checkStaffField', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'field=' + encodeURIComponent(config.field) + '&value=' + encodeURIComponent(value) +
+              '&excludeId=' + encodeURIComponent(excludeId)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (thisRequest !== requestId) return; // a newer check has since superseded this one
+          taken = !data.available;
+          // Always shown once resolved, debounced or blurred - the debounce
+          // itself already means "they've stopped typing", so by the time
+          // this fires there's no more "mid-keystroke" left to protect.
+          if (taken) {
+            showFieldError(config.inputId, config.takenMessage);
+          } else {
+            clearFieldError(config.inputId);
+          }
+        })
+        .catch(function () {
+          if (thisRequest !== requestId) return;
+          // Can't confirm either way - don't block submission over a network
+          // hiccup, the server re-checks for real at submit time anyway.
+          taken = false;
+        });
+    }
+
+    input.addEventListener('input', function () {
+      taken = false;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(check, 300);
+    });
+    input.addEventListener('blur', check);
+
+    return { checkNow: check, isTaken: function () { return taken; } };
+  }
+
+  var nicAvailability = createAvailabilityChecker({
+    inputId: 'nic', field: 'nic', formatValidator: validateNic,
+    takenMessage: 'A staff account already exists with this NIC.'
+  });
+  var emailAvailability = createAvailabilityChecker({
+    inputId: 'email', field: 'email', formatValidator: validateEmail,
+    takenMessage: 'That email is already in use.'
+  });
+
   function validateUsername() {
     var username = document.getElementById('username').value.trim();
     if (!USERNAME_PATTERN.test(username)) {
@@ -138,6 +220,19 @@ function initStaffFormValidation(formId, options) {
   form.addEventListener('submit', function (e) {
     var valid = [validateName(), validateNic(), validatePhone(), validateEmail(), validateUsername(), validatePassword()]
       .every(function (result) { return result; });
+
+    // Best-effort against whatever the last availability check found - if
+    // no check has resolved yet (e.g. submitting right after typing, before
+    // the debounce fires), this can't catch a clash; CreateStaffServlet/
+    // EditStaffServlet still re-check for real when the form actually posts.
+    if (nicAvailability.isTaken()) {
+      showFieldError('nic', 'A staff account already exists with this NIC.');
+      valid = false;
+    }
+    if (emailAvailability.isTaken()) {
+      showFieldError('email', 'That email is already in use.');
+      valid = false;
+    }
 
     if (!valid) e.preventDefault();
   });

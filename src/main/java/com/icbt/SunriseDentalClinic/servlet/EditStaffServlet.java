@@ -73,12 +73,13 @@ public class EditStaffServlet extends HttpServlet {
 
         String checkUsernameSql = "SELECT 1 FROM users WHERE username = ? AND id <> ?";
         String checkEmailSql = "SELECT 1 FROM users WHERE email = ? AND id <> ?";
+        String checkNicSql = "SELECT 1 FROM users WHERE nic = ? AND id <> ?";
         String updateSqlBase = "UPDATE users SET name = ?, nic = ?, address = ?, phone = ?, email = ?, username = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
 
             // Excludes this staff member's own id so re-saving their unchanged
-            // username/email isn't mistaken for a clash.
+            // username/email/NIC isn't mistaken for a clash.
             try (PreparedStatement ps = conn.prepareStatement(checkUsernameSql)) {
                 ps.setString(1, username.trim());
                 ps.setString(2, id);
@@ -96,6 +97,17 @@ public class EditStaffServlet extends HttpServlet {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         forwardWithError(request, response, "That email is already in use.", id, name, nic, address, phone, email, username);
+                        return;
+                    }
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(checkNicSql)) {
+                ps.setString(1, nic.trim());
+                ps.setString(2, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "A staff account already exists with this NIC.", id, name, nic, address, phone, email, username);
                         return;
                     }
                 }

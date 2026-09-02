@@ -39,6 +39,7 @@ public class CreateStaffServlet extends HttpServlet {
 
         String checkUsernameSql = "SELECT 1 FROM users WHERE username = ?";
         String checkEmailSql = "SELECT 1 FROM users WHERE email = ?";
+        String checkNicSql = "SELECT 1 FROM users WHERE nic = ?";
         String insertSql = "INSERT INTO users (username, password, name, nic, address, phone, email, role, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, 'staff', 'active')";
 
@@ -61,6 +62,17 @@ public class CreateStaffServlet extends HttpServlet {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         forwardWithError(request, response, "That email is already in use.", name, nic, address, phone, email, username);
+                        return;
+                    }
+                }
+            }
+
+            // A NIC identifies one real person - one staff account per NIC.
+            try (PreparedStatement ps = conn.prepareStatement(checkNicSql)) {
+                ps.setString(1, nic.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "A staff account already exists with this NIC.", name, nic, address, phone, email, username);
                         return;
                     }
                 }
