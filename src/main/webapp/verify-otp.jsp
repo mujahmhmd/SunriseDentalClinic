@@ -57,10 +57,15 @@
       <form id="verifyOtpForm" action="verifyOtp" method="post" novalidate>
 
         <div class="mb-6">
-          <label for="otp" class="block text-sm font-medium text-clinic-900 mb-1.5">6-Digit Code</label>
-          <input type="text" id="otp" name="otp" inputmode="numeric" maxlength="6" placeholder="e.g. 123456" required
-                 class="w-full border border-clinic-100 bg-clinic-50/50 rounded-xl px-3.5 py-3 text-center text-xl tracking-[0.5em] text-clinic-900 placeholder:text-clinic-700/30 placeholder:tracking-normal placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition">
-          <p id="otpError" class="hidden text-xs text-red-600 mt-1.5"></p>
+          <label for="otpBox0" class="block text-sm font-medium text-clinic-900 mb-2 text-center">6-Digit Code</label>
+          <div id="otpBoxes" class="flex items-center justify-center gap-2.5">
+            <% for (int i = 0; i < 6; i++) { %>
+            <input type="text" id="otpBox<%= i %>" class="otp-box w-10 h-12 sm:w-12 sm:h-14 border border-clinic-100 bg-clinic-50/50 rounded-xl text-center text-xl font-semibold text-clinic-900 focus:outline-none focus:ring-2 focus:ring-clinic-600 focus:border-transparent transition"
+                   inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit <%= i + 1 %> of 6">
+            <% } %>
+          </div>
+          <input type="hidden" id="otp" name="otp">
+          <p id="otpError" class="hidden text-xs text-red-600 mt-2.5 text-center"></p>
         </div>
 
         <button type="submit"
@@ -82,26 +87,48 @@
 
   <jsp:include page="components/toast.jsp" />
 
+  <script src="assets/js/otp-input.js"></script>
   <script>
-    // Only digits, and only up to 6 of them - nothing else a code can be.
-    document.getElementById('otp').addEventListener('input', function () {
-      this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    var otpForm = document.getElementById('verifyOtpForm');
+    var otpBoxes = Array.prototype.slice.call(document.querySelectorAll('.otp-box'));
+    var otpErrorEl = document.getElementById('otpError');
+
+    function showOtpError(message) {
+      otpErrorEl.textContent = message;
+      otpErrorEl.classList.remove('hidden');
+      otpBoxes.forEach(function (box) {
+        box.classList.add('border-red-400');
+        box.classList.remove('border-clinic-100');
+      });
+    }
+
+    function clearOtpError() {
+      otpErrorEl.classList.add('hidden');
+      otpBoxes.forEach(function (box) {
+        box.classList.remove('border-red-400');
+        box.classList.add('border-clinic-100');
+      });
+    }
+
+    initOtpInput({
+      containerId: 'otpBoxes',
+      hiddenInputId: 'otp',
+      // All 6 digits typed (or a full code pasted in) - submit right away
+      // instead of making them also click Verify Code.
+      onComplete: function () { otpForm.requestSubmit(); }
     });
 
-    document.getElementById('verifyOtpForm').addEventListener('submit', function (e) {
-      var otp = document.getElementById('otp').value.trim();
-      var errorEl = document.getElementById('otpError');
-      var inputEl = document.getElementById('otp');
+    // Any edit after an error is showing means they're correcting it -
+    // don't leave the boxes red while they're actively retyping.
+    document.getElementById('otp').addEventListener('input', clearOtpError);
+
+    otpForm.addEventListener('submit', function (e) {
+      var otp = document.getElementById('otp').value;
       if (!/^\d{6}$/.test(otp)) {
-        errorEl.textContent = 'Enter the 6-digit code.';
-        errorEl.classList.remove('hidden');
-        inputEl.classList.add('border-red-400');
-        inputEl.classList.remove('border-clinic-100');
+        showOtpError('Enter the 6-digit code.');
         e.preventDefault();
       } else {
-        errorEl.classList.add('hidden');
-        inputEl.classList.remove('border-red-400');
-        inputEl.classList.add('border-clinic-100');
+        clearOtpError();
       }
     });
 
