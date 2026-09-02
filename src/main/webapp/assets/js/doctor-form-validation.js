@@ -6,10 +6,23 @@
 // Fields validate on blur, not on every keystroke (see staff-form-validation.js
 // for why): a strict-format field reads as "wrong" for most of the time
 // you're typing it, so flagging it red mid-entry is more confusing than helpful.
+//
+// NIC and SLMC Reg No additionally get a live *availability* check once
+// their format is valid: debounced 300ms after typing stops (and again
+// immediately on blur), an AJAX call to CheckDoctorFieldServlet reports
+// whether another doctor already has that value, right under the field -
+// same live-check pattern as the current-password check on the Settings
+// page, including the same race-condition guard (a later check's response
+// can otherwise land after an earlier one's and show a stale result).
 function initDoctorFormValidation(formId) {
   var NIC_PATTERN = /^(\d{9}[VXvx]|\d{12})$/;
   var PHONE_PATTERN = /^0\d{9}$/;
   var SLMC_PATTERN = /^[A-Za-z0-9-]{3,15}$/;
+
+  // Edit form only - excludes the doctor's own record from the availability
+  // check, so re-saving their unchanged NIC/SLMC isn't flagged as a clash.
+  var doctorIdInput = document.getElementById('doctorId');
+  var excludeId = doctorIdInput ? doctorIdInput.value : '';
 
   function showFieldError(id, message) {
     var errorEl = document.getElementById(id + 'Error');
@@ -75,6 +88,73 @@ function initDoctorFormValidation(formId) {
     clearFieldError('slmcRegNo');
     return true;
   }
+
+  // One factory covers both NIC and SLMC Reg No - same check, just a
+  // different field name/format-validator/not-available message.
+  function createAvailabilityChecker(config) {
+    var input = document.getElementById(config.inputId);
+    if (!input) return { checkNow: function () {}, isTaken: function () { return false; } };
+
+    var debounceTimer = null;
+    var requestId = 0;
+    var taken = false;
+
+    function check() {
+      clearTimeout(debounceTimer);
+      // Only worth asking the server once the value is actually well-formed -
+      // an incomplete/invalid value can't be "taken", it's just not done yet.
+      if (!config.formatValidator()) {
+        taken = false;
+        return;
+      }
+      var value = input.value.trim();
+      var thisRequest = ++requestId;
+
+      fetch('checkDoctorField', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'field=' + encodeURIComponent(config.field) + '&value=' + encodeURIComponent(value) +
+              '&excludeId=' + encodeURIComponent(excludeId)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (thisRequest !== requestId) return; // a newer check has since superseded this one
+          taken = !data.available;
+          // Always shown once resolved, debounced or blurred - the debounce
+          // itself is what already means "they've stopped typing", so by the
+          // time this fires there's no more "mid-keystroke" left to protect.
+          if (taken) {
+            showFieldError(config.inputId, config.takenMessage);
+          } else {
+            clearFieldError(config.inputId);
+          }
+        })
+        .catch(function () {
+          if (thisRequest !== requestId) return;
+          // Can't confirm either way - don't block submission over a network
+          // hiccup, the server re-checks for real at submit time anyway.
+          taken = false;
+        });
+    }
+
+    input.addEventListener('input', function () {
+      taken = false;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(check, 300);
+    });
+    input.addEventListener('blur', check);
+
+    return { checkNow: check, isTaken: function () { return taken; } };
+  }
+
+  var nicAvailability = createAvailabilityChecker({
+    inputId: 'nic', field: 'nic', formatValidator: validateNic,
+    takenMessage: 'A doctor already exists with this NIC.'
+  });
+  var slmcAvailability = createAvailabilityChecker({
+    inputId: 'slmcRegNo', field: 'slmcRegNo', formatValidator: validateSlmc,
+    takenMessage: 'That SLMC registration number is already in use.'
+  });
 
   function validateQualifications() {
     var qualifications = document.getElementById('qualifications').value.trim();
@@ -218,6 +298,19 @@ function initDoctorFormValidation(formId) {
       validateQualifications(), validateSpecializations(),
       validateExperienceYears(), validateConsultationFee(), validateSchedule()
     ].every(function (result) { return result; });
+
+    // Best-effort against whatever the last availability check found - if
+    // no check has resolved yet (e.g. submitting right after typing, before
+    // the debounce fires), this can't catch a clash; CreateDoctorServlet/
+    // EditDoctorServlet still re-check for real when the form actually posts.
+    if (nicAvailability.isTaken()) {
+      showFieldError('nic', 'A doctor already exists with this NIC.');
+      valid = false;
+    }
+    if (slmcAvailability.isTaken()) {
+      showFieldError('slmcRegNo', 'That SLMC registration number is already in use.');
+      valid = false;
+    }
 
     if (!valid) e.preventDefault();
   });

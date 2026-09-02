@@ -121,7 +121,8 @@ public class EditDoctorServlet extends HttpServlet {
             return;
         }
 
-        String checkSql = "SELECT 1 FROM doctors WHERE slmc_reg_no = ? AND id <> ?";
+        String checkSlmcSql = "SELECT 1 FROM doctors WHERE slmc_reg_no = ? AND id <> ?";
+        String checkNicSql = "SELECT 1 FROM doctors WHERE nic = ? AND id <> ?";
         String updateSql = "UPDATE doctors SET name = ?, nic = ?, phone = ?, address = ?, slmc_reg_no = ?, " +
                 "qualifications = ?, experience_years = ?, consultation_fee = ? WHERE id = ?";
 
@@ -129,12 +130,24 @@ public class EditDoctorServlet extends HttpServlet {
 
             // Excludes this doctor's own id so re-saving their unchanged
             // registration number isn't mistaken for a clash.
-            try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+            try (PreparedStatement ps = conn.prepareStatement(checkSlmcSql)) {
                 ps.setString(1, slmcRegNo.trim());
                 ps.setString(2, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         forwardWithError(request, response, "That SLMC registration number is already in use.", id);
+                        return;
+                    }
+                }
+            }
+
+            // Same idea for NIC — one doctor record per real person.
+            try (PreparedStatement ps = conn.prepareStatement(checkNicSql)) {
+                ps.setString(1, nic.trim());
+                ps.setString(2, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "A doctor already exists with this NIC.", id);
                         return;
                     }
                 }

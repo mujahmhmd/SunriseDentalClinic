@@ -108,7 +108,7 @@ function initSettingsValidation() {
     clearFieldError('currentPassword');
   }
 
-  /** @param silent don't show the "incorrect" error yet - used while still typing */
+  /** @param silent don't nag "enter your current password" for a merely-empty field while still typing */
   function verifyCurrentPassword(silent) {
     clearTimeout(verifyDebounceTimer);
     var currentPassword = currentPasswordInput.value;
@@ -131,14 +131,17 @@ function initSettingsValidation() {
         if (data.valid) {
           unlockNewPasswordFields();
         } else {
+          // Always shown once resolved, debounced or blurred - the debounce
+          // itself already means "they've stopped typing", so by the time
+          // this fires there's no more "mid-keystroke" left to protect.
           lockNewPasswordFields();
-          if (!silent) showFieldError('currentPassword', 'Current password is incorrect.');
+          showFieldError('currentPassword', 'Current password is incorrect.');
         }
       })
       .catch(function () {
         if (requestId !== verifyRequestId) return;
         lockNewPasswordFields();
-        if (!silent) showFieldError('currentPassword', "Couldn't verify your password - try again.");
+        showFieldError('currentPassword', "Couldn't verify your password - try again.");
       });
   }
 

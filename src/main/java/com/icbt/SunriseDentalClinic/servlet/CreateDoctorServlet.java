@@ -64,19 +64,33 @@ public class CreateDoctorServlet extends HttpServlet {
             return;
         }
 
-        String checkSql = "SELECT 1 FROM doctors WHERE slmc_reg_no = ?";
+        String checkSlmcSql = "SELECT 1 FROM doctors WHERE slmc_reg_no = ?";
+        String checkNicSql = "SELECT 1 FROM doctors WHERE nic = ?";
         String insertSql = "INSERT INTO doctors (name, nic, phone, address, slmc_reg_no, qualifications, " +
                 "experience_years, consultation_fee, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')";
 
         try (Connection conn = DBConnection.getConnection()) {
 
-            // Checked explicitly (rather than relying on the UNIQUE constraint
+            // Checked explicitly (rather than relying on a UNIQUE constraint
             // failing) so we can show a friendly message instead of a raw SQL error.
-            try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+            try (PreparedStatement ps = conn.prepareStatement(checkSlmcSql)) {
                 ps.setString(1, slmcRegNo.trim());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         forwardWithError(request, response, "That SLMC registration number is already in use.");
+                        return;
+                    }
+                }
+            }
+
+            // A NIC identifies one real person — one doctor record per NIC,
+            // so the same person can't accidentally (or deliberately) end up
+            // registered twice under two different doctor entries.
+            try (PreparedStatement ps = conn.prepareStatement(checkNicSql)) {
+                ps.setString(1, nic.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        forwardWithError(request, response, "A doctor already exists with this NIC.");
                         return;
                     }
                 }

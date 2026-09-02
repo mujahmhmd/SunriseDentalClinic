@@ -79,7 +79,7 @@
           <% } %>
 
           <form id="editDoctorForm" action="editDoctor" method="post" novalidate>
-            <input type="hidden" name="id" value="<%= vId %>">
+            <input type="hidden" id="doctorId" name="id" value="<%= vId %>">
 
             <h2 class="text-xs font-semibold uppercase tracking-wide text-clinic-700/50 mb-3">Personal Details</h2>
 
