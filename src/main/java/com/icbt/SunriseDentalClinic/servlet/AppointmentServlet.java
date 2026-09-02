@@ -90,8 +90,22 @@ public class AppointmentServlet extends HttpServlet {
                         row.put("patientName", rs.getString("patient_name"));
                         row.put("patientPhone", rs.getString("patient_phone"));
                         row.put("doctorName", rs.getString("doctor_name"));
-                        row.put("date", dateFormat.format(rs.getDate("appointment_date")));
-                        row.put("time", timeFormat.format(rs.getTime("appointment_time")));
+                        java.sql.Date apptDate = rs.getDate("appointment_date");
+                        java.sql.Time apptTime = rs.getTime("appointment_time");
+                        row.put("date", dateFormat.format(apptDate));
+                        row.put("time", timeFormat.format(apptTime));
+
+                        // Complete & Bill only makes sense once the appointment's day has
+                        // arrived - staff shouldn't be able to bill an appointment that's
+                        // still on a future date. Date-only on purpose (not date+time): a
+                        // 4pm appointment can still be completed earlier that same day,
+                        // e.g. if the patient came in ahead of schedule. Compared as a
+                        // plain local date, same as how appointment_date was written in
+                        // the first place (Date.valueOf, no timezone math) -
+                        // StartAppointmentPaymentServlet re-checks this for real, this
+                        // flag only controls whether the button even renders enabled.
+                        boolean canComplete = !apptDate.toLocalDate().isAfter(java.time.LocalDate.now());
+                        row.put("canComplete", String.valueOf(canComplete));
                         String reason = rs.getString("reason_for_visit");
                         row.put("reason", reason == null ? "" : reason);
                         row.put("status", rs.getString("status"));

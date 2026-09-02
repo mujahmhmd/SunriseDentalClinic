@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Opens the payment popup on the appointments page: flips the appointment to
@@ -24,13 +26,41 @@ import java.sql.SQLException;
 @WebServlet("/startAppointmentPayment")
 public class StartAppointmentPaymentServlet extends HttpServlet {
 
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM d, yyyy");
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String id = request.getParameter("id");
+        response.setContentType("application/json;charset=UTF-8");
 
         try (Connection conn = DBConnection.getConnection()) {
+
+            // The real gate - AppointmentServlet already keeps the button disabled
+            // for a future-dated appointment, but that's rendering only; a request
+            // can always bypass it, so it's re-checked here before anything moves.
+            // Date-only on purpose: a same-day appointment can be completed any
+            // time that day, even before its scheduled hour.
+            LocalDate apptDate = null;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT appointment_date FROM appointments WHERE id = ?")) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        apptDate = rs.getDate("appointment_date").toLocalDate();
+                    }
+                }
+            }
+            if (apptDate == null) {
+                response.getWriter().write("{\"error\":\"That appointment couldn't be found.\"}");
+                return;
+            }
+            if (apptDate.isAfter(LocalDate.now())) {
+                response.getWriter().write("{\"error\":\"This appointment hasn't happened yet - it's scheduled for " +
+                        escape(apptDate.format(DISPLAY_FORMAT)) + ". You can complete it on or after that date.\"}");
+                return;
+            }
 
             try (PreparedStatement ps = conn.prepareStatement(
                     "UPDATE appointments SET status = 'Processing Payment' " +
@@ -71,7 +101,6 @@ public class StartAppointmentPaymentServlet extends HttpServlet {
             }
             json.append("]}");
 
-            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(json.toString());
 
         } catch (SQLException e) {

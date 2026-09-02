@@ -73,6 +73,14 @@ function initAppointmentPayment(config) {
     fetch('startAppointmentPayment?id=' + appointmentId, { method: 'POST' })
       .then(function (res) { return res.json(); })
       .then(function (data) {
+        // The button itself is already disabled for a future appointment
+        // (see appointment-table.jsp) - this is the fallback for whatever
+        // gets past that (a stale render, a direct request), so the popup
+        // never opens on an appointment the server just refused to start.
+        if (data.error) {
+          if (typeof config.onBlocked === 'function') config.onBlocked(data.error);
+          return;
+        }
         currentAppointmentId = appointmentId;
         idInput.value = appointmentId;
         consultationFee = Number(data.consultationFee) || 0;

@@ -222,6 +222,9 @@
 
         var complete = e.target.closest('.complete-appointment');
         if (complete) {
+          // Belt and suspenders - a disabled button shouldn't even dispatch a
+          // click, but this keeps the intent explicit either way.
+          if (complete.disabled) return;
           openAppointmentPayment(complete.dataset.id);
           return;
         }
@@ -330,7 +333,10 @@
         cancelBtnId: 'paymentCancelBtn',
         // Cancelling the popup reverts the appointment to Scheduled server-side -
         // refresh the table so that shows up instead of the stale "Processing Payment" row.
-        onCancelled: function () { loadAppointments(searchInput.value, currentPage, false); }
+        onCancelled: function () { loadAppointments(searchInput.value, currentPage, false); },
+        // Server refused to start payment (appointment's still in the future) -
+        // just a toast, the popup never opens.
+        onBlocked: function (message) { showToast(message, 'error'); }
       });
     })();
 
