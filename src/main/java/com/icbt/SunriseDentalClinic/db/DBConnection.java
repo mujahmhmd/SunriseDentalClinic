@@ -11,7 +11,13 @@ import java.sql.SQLException;
 public class DBConnection {
 
     // JDBC URL for the local XAMPP MySQL instance and the "sunrisedentalclinic" database.
-    private static final String URL = "jdbc:mysql://localhost:3306/sunrisedentalclinic?useSSL=false&serverTimezone=UTC";
+    // serverTimezone must match the MySQL server's actual clock (its time_zone
+    // system variable is SYSTEM, which resolves to Asia/Colombo on this host) -
+    // not the timezone we'd *like* it to be. A mismatch here doesn't error, it
+    // just silently shifts every TIMESTAMP round-tripped through JDBC by the
+    // difference (discovered via forgot-password OTPs expiring the instant
+    // they were issued, since expires_at was landing ~5.5h in the past).
+    private static final String URL = "jdbc:mysql://localhost:3306/sunrisedentalclinic?useSSL=false&serverTimezone=Asia/Colombo";
     private static final String USER = "root";
     private static final String PASSWORD = ""; // default XAMPP root password is empty
 
