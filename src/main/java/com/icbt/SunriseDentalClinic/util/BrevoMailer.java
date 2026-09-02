@@ -32,7 +32,7 @@ public final class BrevoMailer {
     public static void sendOtpEmail(String toEmail, String toName, String otp) throws IOException, InterruptedException {
         String html = "<div style=\"font-family:sans-serif;font-size:15px;color:#1c1c1c;line-height:1.5\">"
                 + "<p>Hi " + escapeHtml(toName) + ",</p>"
-                + "<p>Use this code to reset your Sunrise Dental Clinic portal password. It expires in 3 minutes.</p>"
+                + "<p>Use this code to reset your Sunrise Dental Clinic portal password. It expires in 5 minutes.</p>"
                 + "<p style=\"font-size:28px;font-weight:700;letter-spacing:6px;margin:24px 0\">" + escapeHtml(otp) + "</p>"
                 + "<p>If you didn't request this, you can safely ignore this email.</p>"
                 + "</div>";

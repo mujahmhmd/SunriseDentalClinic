@@ -50,7 +50,7 @@
         </svg>
       </div>
       <h1 class="font-display text-2xl text-clinic-900">Enter Reset Code</h1>
-      <p class="text-sm text-clinic-700/70 mt-1 text-center">We sent a 6-digit code to <span class="font-medium text-clinic-900"><%= resetEmail %></span>. It expires in 3 minutes.</p>
+      <p class="text-sm text-clinic-700/70 mt-1 text-center">We sent a 6-digit code to <span class="font-medium text-clinic-900"><%= resetEmail %></span>. It expires in 5 minutes.</p>
     </div>
 
     <div class="bg-white/90 backdrop-blur rounded-[1.75rem] shadow-xl shadow-clinic-900/10 border border-clinic-100 p-7">

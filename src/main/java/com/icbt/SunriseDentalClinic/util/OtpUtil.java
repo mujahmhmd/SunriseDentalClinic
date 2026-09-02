@@ -22,7 +22,7 @@ import java.time.Instant;
  */
 public final class OtpUtil {
 
-    public static final int OTP_VALID_MINUTES = 3;
+    public static final int OTP_VALID_MINUTES = 5;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 

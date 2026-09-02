@@ -184,7 +184,7 @@
             <li>On the login screen, click <strong class="text-clinic-900">Forgot?</strong> next to the Password field, then enter the
               <strong class="text-clinic-900">email</strong> on your account and click <strong class="text-clinic-900">Send Reset Code</strong>.</li>
             <li>Check your inbox for a <strong class="text-clinic-900">6-digit code</strong> and enter it on the next screen. It
-              <strong class="text-clinic-900">expires in 3 minutes</strong>, so use it quickly - if it expires, go back and resend a fresh one.</li>
+              <strong class="text-clinic-900">expires in 5 minutes</strong>, so use it quickly - if it expires, go back and resend a fresh one.</li>
             <li>Choose a <strong class="text-clinic-900">new password</strong>, confirm it, and you're straight back on the login screen ready to sign in.</li>
           </ol>
           <p class="text-sm text-clinic-700/70">No email on your account, or the reset email never arrives? Ask an admin to check or update your email under Staffs.</p>
