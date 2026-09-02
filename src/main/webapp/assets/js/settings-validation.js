@@ -177,12 +177,24 @@ function initSettingsValidation() {
   newPasswordInput.addEventListener('blur', validateNewPassword);
   confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
 
-  // Same live-check treatment for whether New Password and Confirm New
-  // Password match: debounced 300ms after typing stops in *either* field
-  // (editing New Password after Confirm's already filled in can make a
-  // previously-matching pair stop matching, so both need to re-trigger
-  // it), silent while Confirm is still empty so it doesn't nag before
-  // there's been a chance to type anything into it.
+  // Same live-check treatment for New Password's own strength, and for
+  // whether it matches Confirm New Password: both debounced 300ms after
+  // typing stops (editing New Password after Confirm's already filled in
+  // can make a previously-matching pair stop matching, so both fields
+  // re-trigger the match check), silent while a field is still empty so it
+  // doesn't nag before there's been a chance to type anything into it.
+  var strengthDebounceTimer = null;
+  function scheduleNewPasswordCheck() {
+    clearTimeout(strengthDebounceTimer);
+    strengthDebounceTimer = setTimeout(function () {
+      if (newPasswordInput.value === '') {
+        clearFieldError('newPassword');
+        return;
+      }
+      validateNewPassword();
+    }, 300);
+  }
+
   var matchDebounceTimer = null;
   function scheduleConfirmPasswordCheck() {
     clearTimeout(matchDebounceTimer);
@@ -192,9 +204,13 @@ function initSettingsValidation() {
         return;
       }
       validateConfirmPassword();
-    }, 400);
+    }, 300);
   }
-  newPasswordInput.addEventListener('input', scheduleConfirmPasswordCheck);
+
+  newPasswordInput.addEventListener('input', function () {
+    scheduleNewPasswordCheck();
+    scheduleConfirmPasswordCheck();
+  });
   confirmPasswordInput.addEventListener('input', scheduleConfirmPasswordCheck);
 
   passwordForm.addEventListener('submit', function (e) {

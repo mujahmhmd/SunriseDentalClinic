@@ -146,6 +146,44 @@
     document.getElementById('newPassword').addEventListener('blur', validateNewPassword);
     document.getElementById('confirmPassword').addEventListener('blur', validateConfirmPassword);
 
+    // Same live-as-you-type treatment as the Settings page's Change Password
+    // form: debounced 300ms after typing stops, so getting it right shows up
+    // without needing to click away first. Blur above still fires immediately
+    // as a fallback (e.g. tabbing straight out). Silent while a field is
+    // empty so it doesn't nag before there's been a chance to type anything.
+    var newPasswordDebounceTimer = null;
+    var confirmPasswordDebounceTimer = null;
+
+    function scheduleNewPasswordCheck() {
+      clearTimeout(newPasswordDebounceTimer);
+      newPasswordDebounceTimer = setTimeout(function () {
+        if (document.getElementById('newPassword').value === '') {
+          clearFieldError('newPassword');
+          return;
+        }
+        validateNewPassword();
+      }, 300);
+    }
+
+    function scheduleConfirmPasswordCheck() {
+      clearTimeout(confirmPasswordDebounceTimer);
+      confirmPasswordDebounceTimer = setTimeout(function () {
+        if (document.getElementById('confirmPassword').value === '') {
+          clearFieldError('confirmPassword');
+          return;
+        }
+        validateConfirmPassword();
+      }, 300);
+    }
+
+    document.getElementById('newPassword').addEventListener('input', function () {
+      scheduleNewPasswordCheck();
+      // Editing New Password after Confirm's already filled in can make a
+      // previously-matching pair stop matching, so re-check that too.
+      scheduleConfirmPasswordCheck();
+    });
+    document.getElementById('confirmPassword').addEventListener('input', scheduleConfirmPasswordCheck);
+
     document.getElementById('resetPasswordForm').addEventListener('submit', function (e) {
       var valid = [validateNewPassword(), validateConfirmPassword()].every(function (r) { return r; });
       if (!valid) e.preventDefault();
