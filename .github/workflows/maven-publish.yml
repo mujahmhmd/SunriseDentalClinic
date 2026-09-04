@@ -1,0 +1,48 @@
+# .github/workflows/ci.yml
+# Continuous Integration for Sunrise Dental Clinic.
+# On every push and pull request it builds the project, runs the full
+# JUnit 5 test suite, packages the deployable WAR, and publishes it as a
+# downloadable build artifact.
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:            # lets you run it by hand from the Actions tab
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build and run all tests
+        run: mvn -B -ntp test
+
+      - name: Package the deployable WAR
+        run: mvn -B -ntp package -DskipTests
+
+      - name: Publish the WAR as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SunriseDentalClinic-war
+          path: target/SunriseDentalClinic.war
+          if-no-files-found: error
+
+      - name: Publish the test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
